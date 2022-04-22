@@ -1,0 +1,35 @@
+---
+- hosts: test
+  vars:
+    url: 'https://go.dev/dl/go1.18.1.linux-amd64.tar.gz'
+    extra_path: /usr/local/go/bin
+  environment:
+    PATH: '{{ extra_path }}:{{ ansible_env.PATH }}'
+  tasks:
+    - name: 下載Golang
+      get_url:
+        #url: "{{url}}"
+        url: "{{url}}"
+        validate_certs: no
+        dest: "/tmp/golang.tar.gz"
+        force: yes
+        sha256sum: b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334
+      register: downloaded_file
+    - name: unzip file and move to /usr/local
+      shell: cd /tmp && tar xzf /tmp/golang.tar.gz && mv go /usr/local/
+    - name: Add go bin dir to $PATH if PATH does not exist
+      lineinfile:
+        path: /etc/profile
+        line: 'PATH={{ extra_path }}:$PATH'
+      when: lookup('file', '/etc/profile') is not search('^\s*PATH\s*=')
+    - name: 'Add {{ extra_path }} to PATH'
+      lineinfile:
+        path: /etc/profile
+        regexp: 'PATH=(["])((?!.*?{{ extra_path }}).*?)(["])$'
+        line: 'PATH=\1\2:{{ extra_path }}\3'
+        backrefs: yes
+      when: lookup('file', '/etc/profile') is search('^\s*PATH\s*=')
+    - name: source /etc/profile
+      shell: source /etc/profile && echo $PATH
+    - name: check golang version
+      shell: "go version"
