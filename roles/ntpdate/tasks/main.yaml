@@ -1,0 +1,55 @@
+---
+#tasks:
+  - name: yum install ntpdate
+    yum:
+      name: ntp
+      state: present
+    with_items:
+      - ntp
+    register: result
+
+  # - name: print result
+  #   debug:
+  #     msg: "{{ result }}"
+
+  - name: remove lines in ntp.conf
+    lineinfile:
+      path: /etc/ntp.conf
+      regexp: '^server'
+      state: absent
+
+  - name: add ntp servers to ntp.conf
+    lineinfile:
+      path: /etc/ntp.conf
+      regexp: '^server'
+      state: present
+      line: |+
+          server time1.google.com prefer
+          server time2.google.com
+          server time3.google.com
+          server time4.google.com
+
+  - name: manual sync time with ntpdate
+    shell: /usr/sbin/ntpdate time1.google.com
+
+  - name: start ntp 
+    service:
+      name: ntpd
+      state: started
+    when:
+      - ansible_os_family == "RedHat"  
+      
+  - name: Control whether NTP is enabled
+    shell: /usr/bin/timedatectl set-ntp yes
+    tags:
+        - enable_ntp_control
+
+  - name: Check Time  
+    shell: timedatectl
+    register: result
+
+  - name: Print date time 
+    debug:
+      msg: "{{ result }}"
+
+  

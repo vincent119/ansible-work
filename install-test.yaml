@@ -1,0 +1,11 @@
+---
+- hosts: test
+  # tasks:
+  # - name: yum install ntpdate
+  #   yum:
+  #     name: ntp
+  #     state: present
+  roles:
+   #- { role: golang, become: yes }
+   - { role: ntpdate, become: yes }
+  #    - { role: ntpdate, become: yes }
