@@ -1,0 +1,43 @@
+---
+- name: Check remote Go file exists
+  stat: path="{{ go_parent_dir }}"
+  register: go_install_path
+
+- name: download go file 
+  when: not go_install_path.stat.exists
+  get_url:
+    url: "{{go_tgz_url}}"
+    validate_certs: no
+    dest: "/tmp/{{go_tgz}}"
+    force: yes
+    checksum: "{{go_checksum}}"
+
+- name: unzip Go file and move to /usr/local
+  when: not go_install_path.stat.exists
+  shell: cd /tmp && tar xzf "/tmp/{{go_tgz}}" && mv go /usr/local/
+  register: go_download_status
+
+- name: Add go bin dir to $PATH if PATH does not exist
+  lineinfile:
+    path: "{{profile_file}}"
+    line: "PATH={{ extra_path }}:$PATH"
+  when: lookup('file', '/etc/profile') is not search('^\s*PATH\s*=')
+
+- name: "Add {{ extra_path }} to PATH"
+  lineinfile:
+    path: "{{profile_file}}"
+    regexp: 'PATH=(["])((?!.*?{{ extra_path }}).*?)(["])$'
+    line: 'PATH=\1\2:{{ extra_path }}\3'
+    backrefs: yes
+  when: lookup('file', '/etc/profile') is search('^\s*PATH\s*=')
+
+- name: source "{{profile_file}}"
+  shell: source "{{profile_file}}" && echo $PATH
+
+- name: check golang version
+  command: bash -c "/usr/local/go/bin/go version|sed -e 's/go version go//g'|cut -d' ' -f1"
+  ignore_errors: yes
+  register: go_version
+  changed_when: false
+
+- debug: msg="go_version={{go_version.stdout}}"

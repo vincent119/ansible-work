@@ -17,19 +17,21 @@
       register: downloaded_file
     - name: unzip file and move to /usr/local
       shell: cd /tmp && tar xzf /tmp/golang.tar.gz && mv go /usr/local/
+      
     - name: Add go bin dir to $PATH if PATH does not exist
       lineinfile:
-        path: /etc/profile
+        path: "{{profile_file}}"
         line: 'PATH={{ extra_path }}:$PATH'
-      when: lookup('file', '/etc/profile') is not search('^\s*PATH\s*=')
+      when: lookup('file', "{{profile_file}}") is not search('^\s*PATH\s*=')
+      
     - name: 'Add {{ extra_path }} to PATH'
       lineinfile:
-        path: /etc/profile
+        path: "{{profile_file}}"
         regexp: 'PATH=(["])((?!.*?{{ extra_path }}).*?)(["])$'
         line: 'PATH=\1\2:{{ extra_path }}\3'
         backrefs: yes
-      when: lookup('file', '/etc/profile') is search('^\s*PATH\s*=')
-    - name: source /etc/profile
-      shell: source /etc/profile && echo $PATH
+      when: lookup('file', "{{profile_file}}") is search('^\s*PATH\s*=')
+    - name: source "{{profile_file}}"
+      shell: source "{{profile_file}}" && echo $PATH
     - name: check golang version
       shell: "go version"
