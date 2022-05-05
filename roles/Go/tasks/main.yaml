@@ -33,6 +33,9 @@
 
 - name: source "{{profile_file}}"
   shell: source "{{profile_file}}" && echo $PATH
+  register: profile_status
+
+- debug: msg="profile={{profile_status.stdout}}"
 
 - name: check golang version
   command: bash -c "/usr/local/go/bin/go version|sed -e 's/go version go//g'|cut -d' ' -f1"
@@ -41,3 +44,9 @@
   changed_when: false
 
 - debug: msg="go_version={{go_version.stdout}}"
+
+- name: Remove tarball file
+  file:
+    path: "/tmp/{{go_tgz}}"
+    state: absent
+  become: yes
