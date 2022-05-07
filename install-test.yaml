@@ -10,6 +10,6 @@
   #  - go_platform: linux-amd64
   #  - url: 'https://go.dev/dl/go1.18.1.linux-amd64.tar.gz'
   roles:
-   - { role: Go, become: yes }
+   - { role: Docker, become: yes }
    #- { role: ntpdate, become: yes }
   #    - { role: ntpdate, become: yes }
