@@ -1,0 +1,21 @@
+---
+
+
+## openresty
+openresty_install_file: "openresty-{{ openresty_version }}.tar.gz"
+openresty_download_url: "https://openresty.org/download/{{openresty_install_file}}"
+openresty_install_ptah: "{{file_install_path}}/openresty-{{ openresty_version }}"
+openresty_conf_path: "{{file_install_path}}/openresty/conf"
+openresty_conf_file_path:  "{{file_install_path}}/openresty/conf/nginx.conf"
+
+
+##opm
+opm_install_file: "{{opm_version}}.tar.gz"
+opm_download_url: "https://github.com/openresty/opm/archive/refs/tags/{{opm_install_file}}"
+
+
+## luarocks
+lua_rocks_file: "{{lua_rocks_version}}.tar.gz"
+lua_rocks_download_url: "https://github.com/luarocks/luarocks/archive/refs/tags/{{lua_rocks_file}}"
+
+

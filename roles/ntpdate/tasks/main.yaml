@@ -1,55 +1,85 @@
 ---
 #tasks:
-  - name: yum install ntpdate
-    yum:
-      name: ntp
-      state: present
-    with_items:
+- name: yum install ntpdate with Redhat or "Centos"
+  yum:
+    name: ntp
+    state: present
+  with_items:
+    - ntp
+  register: result
+  when:  ansible_os_family == "RedHat" or ansible_os_family == "Centos" 
+
+- name: apt install ntpdate with ubuntu
+  apt:
+    name: ntp
+    state: latest
+    update_cache: yes
+  when:  ansible_os_family == "Ubuntu"
+  register: install_ntp
+#- debug: msg= "{{ msg.split('\n') }}"  
+#- debug: msg="install_ntp={{install_ntp.stdout}}"
+
+- name: remove lines in ntp.conf
+  lineinfile:
+    path: /etc/ntp.conf
+    regexp: '^server'
+    state: absent
+
+- name: add ntp servers to ntp.conf
+  lineinfile:
+    path: /etc/ntp.conf
+    regexp: '^server'
+    state: present
+    line: |+
+        server time1.google.com prefer
+        server time2.google.com
+        server time3.google.com
+        server time4.google.com
+
+- name: manual sync time with ntpdate with "RedHat" or "Centos"
+  shell: /usr/sbin/ntpdate time1.google.com
+  when:  ansible_os_family == "RedHat" or ansible_os_family == "Centos" 
+
+- name: start ntp with Redhat or "Centos"
+  service:
+    name: ntpd
+    state: restart
+    enabled: yes
+  when:  ansible_os_family == "RedHat" or ansible_os_family == "Centos"  
+
+- name: start ntp with "Ubuntu"
+  service:
+    name: 
       - ntp
-    register: result
+      - systemd-timesyncd
+    state: restart
+    enabled: yes
+  when:  ansible_os_family == "Ubuntu"
 
-  # - name: print result
-  #   debug:
-  #     msg: "{{ result }}"
+- name: Control whether NTP is enabled with "Centos" or "RedHat"
+  shell: /usr/bin/timedatectl set-ntp false
+  tags:
+      - enable_ntp_control
+  when:  ansible_os_family == "RedHat" or ansible_os_family == "Centos"  
 
-  - name: remove lines in ntp.conf
-    lineinfile:
-      path: /etc/ntp.conf
-      regexp: '^server'
-      state: absent
+- name: Control whether NTP is enabled with "Ubuntu"
+  shell: /usr/bin/systemctl enable systemd-timesyncd.service
+  tags:
+      - enable_ntp_control
+  when:  ansible_os_family == "Ubuntu"
+  register:  aaa
 
-  - name: add ntp servers to ntp.conf
-    lineinfile:
-      path: /etc/ntp.conf
-      regexp: '^server'
-      state: present
-      line: |+
-          server time1.google.com prefer
-          server time2.google.com
-          server time3.google.com
-          server time4.google.com
+- name: debug  
+  debug:
+    msg: "{{ aaa }}"
 
-  - name: manual sync time with ntpdate
-    shell: /usr/sbin/ntpdate time1.google.com
 
-  - name: start ntp 
-    service:
-      name: ntpd
-      state: started
-    when:
-      - ansible_os_family == "RedHat"  
-      
-  - name: Control whether NTP is enabled
-    shell: /usr/bin/timedatectl set-ntp yes
-    tags:
-        - enable_ntp_control
 
-  - name: Check Time  
-    shell: timedatectl
-    register: result
+- name: Check Time  
+  shell: timedatectl
+  register: result
 
-  - name: Print date time 
-    debug:
-      msg: "{{ result }}"
+- name: Print date time 
+  debug:
+    msg: "{{ result }}"
 
-  

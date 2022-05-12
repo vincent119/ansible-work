@@ -1,0 +1,12 @@
+---
+openresty_version: "1.1.1"
+opm_version: "v0.06"
+lua_rocks_version: "v3.9.0"
+
+file_source_path: "/opt/source"
+file_install_path: "/opt/APP"
+
+openresty_user: "ngUseX"
+openresty_group: "ngUseX"
+
+
