@@ -1,0 +1,10 @@
+---
+
+
+
+
+ubuntu_apt_dir: /etc/apt/sources.list.d/docker.list
+redhat_repo_url: https://download.docker.com/linux/rhel/docker-ce.repo
+Docker_repo_url: https://download.docker.com/linux/ubuntu
+GPG_url:  https://download.docker.com/linux/ubuntu/gpg
+GPG_PATH: /usr/share/keyrings/docker-archive-keyring.gpg

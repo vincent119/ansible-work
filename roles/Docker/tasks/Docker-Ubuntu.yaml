@@ -1,0 +1,38 @@
+---
+- name: Remove old version
+  apt:
+    name:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+    state: absent
+
+- name: Set up the repository
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+
+- name: check GPG file exist
+  stat:
+    path: "{{ GPG_PATH }}"
+  register: GPG_file
+
+
+- name: Add Docker's official GPG key
+  shell: curl -fsSL "{{GPG_url}}" | sudo apt-key add - | sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+  become: true
+
+
+- name: apt install docker 
+  apt:
+    name:
+      - docker-ce 
+    state: present
+

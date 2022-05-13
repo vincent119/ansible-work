@@ -1,0 +1,48 @@
+- name: Install yum-utils
+  yum: 
+    name: yum-utils
+    state: present
+
+- name: Add Docker yum repository
+  shell: yum-config-manager \
+    --add-repo \
+    "{{redhat_repo_url}}" \
+    && yum-config-manager --save --setopt=docker-ce-stable.skip_if_unavailable=true
+  when:  ansible_os_family == "RedHat" or ansible_os_family == "Centos"
+
+- name: enable and disable docker repository
+  shell: yum-config-manager --enable docker-ce-stable && yum-config-manager --disable docker-ce-test
+
+- name: Remove Docker old version
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+    state: removed
+
+- name: Install Docker Engine
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      #- docker-compose-plugin
+    state: latest
+
+- name: docker service
+  ansible.builtin.systemd:
+    state: restarted
+    name: docker
+
+- name: docker enabled
+  ansible.builtin.systemd:
+    enabled: yes
+    name: docker
+  
+

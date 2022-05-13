@@ -1,9 +1,9 @@
 ---
 - include_tasks: init-Redhat.yaml
-  when: ansible_os_family == 'RedHat' or ansible_os_family == "Centos"
+  when: ansible_distribution == 'RedHat' or ansible_distribution == "Centos"
 
 - include_tasks: init-Ubuntu.yaml
-  when: ansible_os_family == "Ubuntu"
+  when: ansible_distribution == "Ubuntu"
 
 
 

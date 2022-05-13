@@ -1,54 +1,9 @@
 ---
-- name: Install yum-utils
-  yum: 
-    name: yum-utils
-    state: present
+- include_tasks: Docker-Redhat.yaml
+  when: ansible_distribution == 'RedHat' or ansible_distribution == "Centos"
 
-- name: Add Docker yum repository
-  shell: yum-config-manager \
-    --add-repo \
-    https://download.docker.com/linux/rhel/docker-ce.repo \
-    && yum-config-manager --save --setopt=docker-ce-stable.skip_if_unavailable=true
-  when:  ansible_os_family == "RedHat" or ansible_os_family == "Centos"
+- include_tasks: Docker-Ubuntu.yaml
+  when: ansible_distribution == "Ubuntu"
 
-- name: enable and disable docker repository
-  shell: yum-config-manager --enable docker-ce-stable && yum-config-manager --disable docker-ce-test
 
-- name: Remove Docker old version
-  yum:
-    name:
-      - docker
-      - docker-client
-      - docker-client-latest
-      - docker-common
-      - docker-latest
-      - docker-latest-logrotate
-      - docker-logrotate
-      - docker-engine
-    state: removed
-
-- name: Install Docker Engine
-  yum:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      #- docker-compose-plugin
-    state: latest
-
-- name: docker service
-  ansible.builtin.systemd:
-    state: restarted
-    name: docker
-
-- name: docker enabled
-  ansible.builtin.systemd:
-    enabled: yes
-    name: docker
-  
-- name: Install docker-compose
-  shell: "curl -SL https://github.com/docker/compose/releases/download/{{docker_compose_ver}}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose"
-
-- name: Change permissions for  docker-compose
-  shell: chmod +x /usr/local/bin/docker-compose
-
+- include_tasks: Docker-compose.yaml
