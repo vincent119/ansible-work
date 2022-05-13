@@ -11,6 +11,6 @@
   #  - url: 'https://go.dev/dl/go1.18.1.linux-amd64.tar.gz'
   roles:
    #- { role: Docker, become: yes }
-   - { role: init, become: yes }
+   - { role: ini, become: yes }
    #- { role: ntpdate, become: yes, become_method: sudo }
   #    - { role: ntpdate, become: yes }

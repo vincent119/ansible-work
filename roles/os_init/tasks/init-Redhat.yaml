@@ -1,0 +1,4 @@
+- name: Disable SELinux with "RedHat"
+  ansible.posix.selinux:
+    state: disabled
+  become: true
