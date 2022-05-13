@@ -1,0 +1,17 @@
+- name: yum install ntpdate with Redhat or "Centos"
+  yum:
+    name: ntp
+    state: present
+  with_items:
+    - ntp
+  register: result
+
+- name: manual sync time with ntpdate with "RedHat" or "Centos"
+  shell: /usr/sbin/ntpdate time1.google.com
+
+
+- name: start ntp with Redhat or "Centos"
+  service:
+    name: ntpd
+    state: restart
+    enabled: yes
