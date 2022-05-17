@@ -10,7 +10,8 @@
   #  - go_platform: linux-amd64
   #  - url: 'https://go.dev/dl/go1.18.1.linux-amd64.tar.gz'
   roles:
-   - { role: Docker, become: yes }
+    - { role: openresty, become: yes }
+   #- { role: Docker, become: yes }
    #- { role: ntp, become: yes }
    #- { role: ntpdate, become: yes, become_method: sudo }
   #    - { role: ntpdate, become: yes }
