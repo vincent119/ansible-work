@@ -1,0 +1,50 @@
+---
+- name: checking owner_group {{ openresty_group }}
+  ansible.builtin.group:
+    name: "{{ openresty_group }}"
+    state: present
+  check_mode: true
+  register: group_status
+
+# - name: output group_status result above
+#   debug:
+#     msg: "{{ group_status }}"
+
+- name: checking owner_user {{ openresty_user }}
+  user: 
+     name: "{{ openresty_user }}"
+     state: present
+  check_mode: true
+  register: user_status
+
+# - name: output user_status result above
+#   debug:
+#     msg: "{{ user_status }}"
+
+- name: add Group {{ openresty_group }}
+  ansible.builtin.group:
+    name: "{{ openresty_group }}"
+    gid: "{{ openresty_group_GID }}"
+    state: present
+  when: group_status.state is not defined
+  register: addGroup_status
+
+- debug: 
+    msg: "Succeed in Create Group {{ openresty_group }}"
+  changed_when: true
+
+- name: add User {{ openresty_user }}
+  user:
+    name: "{{ openresty_user }}"
+    groups: "{{ openresty_group }}"
+    shell: /sbin/nologin
+    uid: "{{ openresty_user_UID }}"
+    append: true
+    state: present
+  become: true
+  when: user_status.state is not defined
+  register: addUser_status
+
+- debug: 
+   msg: "Succeed in Create User {{ openresty_user }}"
+  changed_when: true

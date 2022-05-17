@@ -1,0 +1,186 @@
+---
+- name: "yum install depend package for RedHat or Centos"
+  yum:
+    name: "{{item}}"
+    update_cache: true
+    state: present
+  with_items:
+    - epel-release
+    - pcre-devel
+    - openssl-devel
+    - gcc
+    - curl
+    - GeoIP-devel
+    - pandoc
+    - zlib.x86_64
+    - perl-Digest-MD5
+    - readline-devel
+    - autoconf
+    - automake
+    - libtool
+    - make
+    - unzip
+    - zip
+    - wget
+    - automake
+    - autoconf
+    - gcc-c++
+    - "@Development tools"
+  when: ansible_distribution == "RedHat" or ansible_distribution == "Centos"
+  register: yum_result
+- debug: var=yum_result
+
+- name: apt install dependability on package for Ubuntu
+  apt:
+    name:
+      - libreadline-dev
+      - libncurses5-dev
+      - libpcre3-dev
+      - libssl-dev
+      - perl
+      - curl
+      - geoip-bin
+      - geoip-database
+      - libgeoip-dev
+      - libgeoip1
+      - zlib1g
+      - zlib1g-dev
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: "check source {{file_source_path}}"
+  stat:
+    path: "{{ file_source_path }}"
+  register: source_status
+- debug: 
+    msg: "{{file_source_path}} not find"
+  when:  not source_status.stat.exists
+
+- name: "Create source {{file_source_path}} directory if it doesn't exist"
+  ansible.builtin.file:
+    path: "{{file_source_path}}"
+    state: directory
+    recurse: true
+  become: true
+  when: not source_status.stat.exists
+  register: dir_result
+
+- name: openresty package download
+  get_url:
+    url: "{{openresty_download_url}}"
+    dest: "{{file_source_path}}"
+
+- name: openresty PGP download
+  get_url:
+    url: "{{openresty_PGP_file}}"
+    dest: "{{file_source_path}}"
+
+- name: unzip openresty package
+  shell: cd "{{file_source_path}}" &&  tar zxvf "{{openresty_install_file}}" && cd "openresty-{{ openresty_version }}"
+  register: unzip_status
+
+- name: copy nginx-module-vts  and ngx_dynamic_upstream to source 
+  copy:
+    src: "{{ role_path }}/files/ngx_module/{{ item }}"
+    dest: "{{file_source_path}}/openresty-{{ openresty_version }}/bundle/"
+  with_items:
+    - nginx-module-vts
+    - ngx_dynamic_upstream
+
+- name: configure  openresty
+  command: >
+    ./configure -j10
+    --prefix={{file_install_path}}/openresty-{{ openresty_version }}
+    --user={{openresty_user}}
+    --group={{openresty_group}}
+    --pid-path={{openresty_pid_path}}
+    --with-luajit 
+    --with-http_geoip_module
+    --with-http_realip_module
+    --with-http_v2_module
+    --with-http_gzip_static_module
+    --with-http_stub_status_module
+    --with-http_secure_link_module
+    --with-stream_realip_module  
+    --without-mail_pop3_module
+    --without-mail_imap_module
+    --without-mail_smtp_module
+    --with-http_iconv_module
+    --with-stream=dynamic
+    --add-dynamic-module=./bundle/ngx_dynamic_upstream 
+    --add-module=./bundle/nginx-module-vts
+  args:
+   chdir: "{{file_source_path}}/openresty-{{ openresty_version }}"
+
+- name: build openresty
+  command: gmake
+  args:
+   chdir: "{{file_source_path}}/openresty-{{ openresty_version }}"
+  register: build_s
+
+
+- name: make install openresty
+  command: gmake install
+  args:
+   chdir: "{{file_source_path}}/openresty-{{ openresty_version }}"
+
+
+- name: soft link openresty-{{ openresty_version }} to openresty
+  file:
+    src: "{{file_install_path}}/openresty-{{ openresty_version }}"
+    dest: "{{file_install_path}}/openresty"
+    state: link
+    owner: "{{openresty_user}}"
+    group: "{{openresty_group}}"
+
+- name: "Create openresty directory if it doesn't exist"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{openresty_user}}"
+    group: "{{openresty_group}}"
+    recurse: true
+  become: true
+  with_items:
+    - "{{openresty_log_path}}"
+    - "{{openresty_vhost_path}}"
+    - "{{openresty_ssl_path}}"
+
+- name: create nginx service for systemd
+  template:
+    src: "{{ role_path }}/templates/nginx.service.j2"
+    dest: /etc/systemd/system/nginx.service
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_service_mgr == 'systemd'
+
+- name: install default nginx configuration
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ openresty_conf_path }}/{{ item }}"
+  with_items:
+    - nginx.conf
+
+- name: install default nginx vhost configuration
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ openresty_vhost_path }}/{{ item }}"
+  with_items:
+    - 034-cp66-F-SSL.Sample
+    - 034-cp66-F.Sample
+  notify: restart nginx
+
+- name: openresty logrotate configuration
+  template:
+    src: "{{ role_path }}/templates/nginx.j2"
+    dest: "{{logrotate_conf_path}}/nginx"
+
+- name: Creates a cron file under /etc/cron.d
+  ansible.builtin.cron:
+    name: "openresty logrotate"
+    minute: "0"
+    hour: "0"
+    user: "{{openresty_user}}}"
+    job: "/usr/sbin/logrotate -f /etc/logrotate.d/nginx"
+    cron_file: nginx

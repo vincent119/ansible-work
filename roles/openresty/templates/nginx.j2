@@ -1,0 +1,18 @@
+{{openresty_log_path}}/*.log {
+{{logrotate_interval}}
+owner {{openresty_user}}}
+group {{openresty_group}}
+mode 0644 
+rotate 7
+dateext
+dateformat -%Y-%m-%d
+missingok
+notifempty
+compress
+sharedscripts
+postrotate
+  if [ -f  {{openresty_pid_path}} ];then
+     kill -USR1 `cat {{openresty_pid_path}}`
+  fi 
+endscript
+}

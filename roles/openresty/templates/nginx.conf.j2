@@ -1,0 +1,123 @@
+user  {{openresty_user}};
+worker_processes  auto;
+pid  {{openresty_pid_path}};
+worker_rlimit_nofile 300000;
+load_module  modules/ngx_dynamic_upstream_module.so;
+events {
+    use epoll;
+    worker_connections  30000;
+    multi_accept on;
+}
+
+http {
+    vhost_traffic_status_zone;
+    include       mime.types;
+    default_type  application/octet-stream;
+    log_format main '"$time_local" client=$remote_addr '
+   'method=$request_method request="$request" '
+   'request_length=$request_length '
+   'status=$status bytes_sent=$bytes_sent '
+   'body_bytes_sent=$body_bytes_sent '
+   'referer=$http_referer '
+   'host=$host '
+   'request_uri=$request_uri '
+   'user_agent="$http_user_agent" '
+   'upstream_addr=$upstream_addr '
+   'upstream_status=$upstream_status '
+   'request_time=$request_time '
+   'upstream_response_time=$upstream_response_time '
+   'upstream_connect_time=$upstream_connect_time '
+   'upstream_header_time=$upstream_header_time '
+   'XFF=$http_x_forwarded_for ';
+   log_format main1 '"$time_local" client=$remote_addr '
+   'method=$request_method request="$request" '
+   'request_length=$request_length '
+   'status=$status bytes_sent=$bytes_sent '
+   'body_bytes_sent=$body_bytes_sent '
+   'referer=$http_referer '
+   'host=$host '
+   'request_uri=$request_uri '
+   'user_agent="$http_user_agent" '
+   'upstream_addr=$upstream_addr '
+   'upstream_status=$upstream_status '
+   'request_time=$request_time '
+   'upstream_response_time=$upstream_response_time '
+   'upstream_connect_time=$upstream_connect_time '
+   'upstream_header_time=$upstream_header_time '
+   'XFF=$http_x_forwarded_for ';
+    geo $whitelist {
+        default 1;
+        2.2.2.2/32 0;
+      }
+
+      map $whitelist $limit {
+        1 $binary_remote_addr;
+        0 "";
+      }
+      
+      #geoip_country /opt/data/geoip/GeoIP.dat;
+
+      {# map $geoip_country_code $allowed_country {
+        default ;
+        CN yes;
+        TW no;
+        HK no;
+        PH no;
+        MY no;
+      } #}
+    #include mime.types;
+    #default_type  application/octet-stream;
+    #lua_need_request_body on;
+    #log_escape_non_ascii off;
+    open_file_cache max=65535 inactive=60s;
+    open_file_cache_min_uses 1;
+    open_file_cache_valid 60s;
+    open_file_cache_errors on;
+    server_tokens off;
+    sendfile        on;
+    proxy_temp_path  /opt/APP/openresty/nginx/proxy_temp/ 1 2;
+    client_max_body_size 50m;
+    client_body_buffer_size        256k;
+    client_header_buffer_size    256k;
+    large_client_header_buffers  4 256k;
+    tcp_nopush on;
+    keepalive_timeout 60;
+    tcp_nodelay on;
+    ssi on;
+    ssi_silent_errors on;
+    ssi_types text/shtml;
+    gzip  on;
+    gzip_min_length  1k;
+    gzip_buffers     4 16k;
+    gzip_http_version 1.0;
+    gzip_comp_level 2;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype image/svg+xml image/x-icon;
+    gzip_vary on;
+    underscores_in_headers on;
+    fastcgi_connect_timeout 300;
+    fastcgi_send_timeout 300;
+    fastcgi_read_timeout 300;
+    fastcgi_buffer_size 64k;
+    fastcgi_buffers 4 64k;
+    fastcgi_busy_buffers_size 128k;
+    proxy_buffer_size 256k;
+    proxy_buffers 4 256k;
+    proxy_busy_buffers_size 256k;
+    server {
+      listen 80;
+      server_name  _;
+      return 444;
+    }
+   {# server {
+    listen 443 default;
+    server_name     _;
+    ssl     on;
+    ssl_certificate  /opt/APP/openresty/nginx/conf/b99.cert;
+    ssl_certificate_key /opt/APP/openresty/nginx/conf/b99.key;
+    return 444;
+   } #}
+        #include waf.conf;
+        include {{openresty_vhost_path}}/*.conf;
+}
+
+

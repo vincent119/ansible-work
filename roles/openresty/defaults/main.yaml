@@ -1,8 +1,10 @@
 ---
-
+environment_config: {}
 
 ## openresty
 openresty_install_file: "openresty-{{ openresty_version }}.tar.gz"
+openresty_PGP_file: "https://openresty.org/download/{{openresty_install_file}}.asc"
+openresty_PGP_public_key: "https://openresty.org/package/pubkey.gpg"
 openresty_download_url: "https://openresty.org/download/{{openresty_install_file}}"
 openresty_install_ptah: "{{file_install_path}}/openresty-{{ openresty_version }}"
 openresty_conf_path: "{{file_install_path}}/openresty/conf"

@@ -1,0 +1,10 @@
+---
+- name: restart nginx
+  service: name=nginx enabled=yes state=restarted
+
+- name: validate nginx configuration
+  command: nginx -t
+  changed_when: False
+
+- name: reload nginx
+  service: name=nginx state=reloaded

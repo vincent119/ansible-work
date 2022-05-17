@@ -1,12 +1,30 @@
 ---
-openresty_version: "1.1.1"
+openresty_version: "1.19.9.1"
 opm_version: "v0.06"
 lua_rocks_version: "v3.9.0"
+
+profile_file: "/etc/profile"
+
 
 file_source_path: "/opt/source"
 file_install_path: "/opt/APP"
 
 openresty_user: "ngUseX"
 openresty_group: "ngUseX"
+openresty_user_UID: 1001
+openresty_group_GID: 1001
+openresty_pid_path: "/var/run/nginx.pid"
+openresty_log_path: "{{file_install_path}}/logs/nginx"
+openresty_conf_path: "{{file_install_path}}/openresty-{{openresty_version}}/nginx/conf"
+openresty_vhost_path: "{{file_install_path}}/openresty-{{openresty_version}}/nginx/conf/vhost"
+openresty_bin_path: "{{file_install_path}}/openresty/bin"
+openresty_sbin_path: "{{file_install_path}}/openresty/nginx/sbin"
+openresty_ssl_path: "{{openresty_conf_path}}/ssl"
+
+
+logrotate_conf_path: "/etc/logrotate.d/"
+logrotate_interval: daily
+
+
 
 

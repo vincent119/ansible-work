@@ -1,2 +1,14 @@
 ---
+- include_tasks: openresty-user.yaml
+- include_tasks: openresty-install.yaml
+
+- include_tasks: openresty-Redhat.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+#- debug: msg="{{ansible_distribution}}"
+
+- include_tasks: openresty-Ubuntu.yaml
+  when: ansible_distribution == "Ubuntu"
+
+
+
 

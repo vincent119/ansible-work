@@ -1,0 +1,21 @@
+---
+- name: Printing the environment openresty in Ansible
+  shell: "cat /etc/environment|grep openresty | wc -l"
+  register: env_openresty
+# - debug: msg="{{env_openresty.stdout}}"
+
+- name: add {{openresty_bin_path}} to path
+  lineinfile:
+    dest: "/etc/environment"
+    state: present
+    regexp: '(PATH=["])(.*)(["])$'
+    line: '\1\2:{{openresty_bin_path}}:{{openresty_sbin_path}}\3'
+    backrefs: yes
+  when: env_openresty.stdout == "0"
+
+- name: source "/etc/environment"
+  shell: source /etc/environment && echo $PATH
+  become: true
+  args:
+     executable: /bin/bash
+  register: profile_status

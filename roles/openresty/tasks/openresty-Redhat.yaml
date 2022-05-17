@@ -1,0 +1,24 @@
+---
+- name: Add go bin dir to $PATH if PATH does not exist
+  shell: "cat /etc/profile |grep openresty | wc -l"
+  register: env_openresty
+- debug: msg="{{env_openresty.stdout}}"
+
+- name: "Add {{ openresty_bin_path }} to PATH"
+  lineinfile:
+    path: "{{profile_file}}"
+    state: present
+    regexp: '(PATH=)(["]?)([\w|\/|\:]+)([\$PATH]?)(["]?)$'
+    line: 'PATH=\2\3{{ openresty_bin_path }}:{{openresty_sbin_path}}:\5'
+    backrefs: yes
+  when: env_openresty.stdout == "0"
+
+- name: source "{{profile_file}}"
+  shell: source "{{profile_file}}" && echo $PATH
+  become: true
+  args:
+     executable: /bin/bash
+  register: profile_status
+
+- debug: msg="profile={{profile_status.stdout}}"
+

@@ -1,0 +1,125 @@
+upstream Front_API_11034s {
+  #ip_hash;
+  # for ngx_dynamic_upstream
+  zone zone_for_api_backends 1m;
+  server 1.1.1.1:11034 max_fails=3 fail_timeout=3s;
+ }
+upstream Front_web_10034s {
+  #ip_hash;
+  # for ngx_dynamic_upstream
+  zone zone_for_backends 1m;
+  server 1.1.1.1.:10034 max_fails=3 fail_timeout=3s;
+}
+server {
+  listen 443 ssl;
+  server_name ;
+  ssl on;
+  ssl_certificate {{openresty_ssl_path}}/wwwc65.com.crt;
+  ssl_certificate_key {{openresty_ssl_path}}/wwwc65.com.key;
+  ssl_session_timeout 5m;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # omit SSLv3 because of POODLE (CVE-2014-3566)
+  ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+  ssl_prefer_server_ciphers on;
+  access_log  {{openresty_log_path}}/034-cp66-ssl.front.access.log main;
+  error_log {{openresty_log_path}}}/034-cp66-ssl.front.error.log;
+  
+  location /robots.txt {return 200 "User-agent: *\nDisallow: /\n";}
+  if ($request_method = OPTIONS ) {
+   return 200;
+  }
+  location /nginx_status {
+    stub_status on;
+    access_log off;
+  }
+  ## 3RP only
+  location /dynamic {
+    allow 10.0.0.0/8;
+    deny all;
+    dynamic_upstream;
+  }
+  # for nginx-module-vts
+  location /ngx_status {
+    allow 10.0.0.0/8;
+    deny all;
+    access_log off;
+    vhost_traffic_status_display;
+    vhost_traffic_status_display_format json;
+  }
+
+  location /maintain.html {
+    root /opt/Htdocs/service;
+  }
+  location /ma.html {
+    root /opt/Htdocs/service;
+  }
+
+  location /apis {
+    proxy_redirect  off;
+    proxy_intercept_errors on;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    rewrite  ^.+apis/?(.*)$ /$1 break;
+    proxy_pass http://Front_API_11034s;
+  }
+  location / {
+    ##########################################
+    #設定維護頁面 set MAM  0;為不開啟維護
+    #             set MAM  1;進入維護模式
+    ##########################################
+    set $MAM 0;
+    ##########################################
+    set $acclist '${whitelist}${MAM}';
+    proxy_redirect  off;
+    proxy_intercept_errors on;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+     if ($http_user_agent ~* "Android|iPhone|(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino") {
+      set $acclist '${acclist}1';
+    }
+    if ( $acclist = '111'){
+      #add_header Cache-Control "public";
+      #return 404 http://$host/maintain.html;
+      error_page 404 /maintain.html;
+      return 404;
+      #echo  $acclist;
+     break;
+    }
+    if ( $acclist = '11'){
+     error_page 404 /maintain.html;
+     return 404;
+     #echo  $acclist;
+     break;
+    }
+    if ( $acclist = '011'){
+     error_page 404 /maintain.html;
+     return 404;
+     #echo  $acclist;
+     break;
+    }
+    if ( $acclist = '01'){
+     error_page 404 /maintain.html;
+     return 404;
+     break;
+    }
+    if ( $acclist = '00'  ){
+      proxy_pass http://Front_web_10034s;
+      break;
+    }
+    if ( $acclist = '001'  ){
+      proxy_pass http://Front_web_10034s;
+      break;
+    }
+    if ( $allowed_country = 'no' ) {
+      #add_header Cache-Control "public";
+      #return 302 https://$host/ma.html;
+      error_page 404 /ma.html;
+      return 404;
+      break;
+    }
+    proxy_pass http://Front_web_10034s;
+  }
+}
+
+
