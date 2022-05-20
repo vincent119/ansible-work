@@ -1,9 +1,11 @@
 - name: apt install ntpdate with ubuntu
   apt:
-    name: ntp
+    name: 
+      - ntp
+      - systemd-timesyncd
     state: latest
     update_cache: yes
-  when:  ansible_os_family == "Ubuntu"
+  when:  ansible_distribution == "Ubuntu"
   register: install_ntp
 
 - name: Control whether NTP is enabled with "Ubuntu"

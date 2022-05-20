@@ -24,7 +24,7 @@ server {
         dynamic_upstream;
     } 
 ```
-## 列出upstream明細
+##  列出upstream明細
 ```sh
 curl "http://127.0.0.1:80/dynamic?upstream=zone_for_backends"
 server 172.16.99.201:9000;

@@ -1,5 +1,5 @@
 ---
-- hosts: t2
+- hosts: test2
   # tasks:
   # - name: yum install ntpdate
   #   yum:
@@ -10,8 +10,9 @@
   #  - go_platform: linux-amd64
   #  - url: 'https://go.dev/dl/go1.18.1.linux-amd64.tar.gz'
   roles:
-    - { role: openresty, become: yes }
+    #- { role: openresty, become: yes }
    #- { role: Docker, become: yes }
-   #- { role: ntp, become: yes }
-   #- { role: ntpdate, become: yes, become_method: sudo }
+   #- { role: os_init, become: yes }
+   - { role: ntp, become: yes }
+   #- { role: ntpdate, becosssme: yes, become_method: sudo }
   #    - { role: ntpdate, become: yes }

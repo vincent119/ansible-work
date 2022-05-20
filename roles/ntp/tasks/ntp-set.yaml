@@ -1,0 +1,25 @@
+---
+- name: remove lines in ntp.conf
+  lineinfile:
+    path: /etc/ntp.conf
+    regexp: '^server'
+    state: absent
+
+- name: add ntp servers to ntp.conf
+  lineinfile:
+    path: /etc/ntp.conf
+    regexp: '^server'
+    state: present
+    line: |+
+      server time1.google.com prefer
+      server time2.google.com
+      server time3.google.com
+      server time4.google.com
+
+- name: Check Time  
+  shell: timedatectl
+  register: result
+
+- name: Print date time 
+  debug:
+    msg: "{{ result }}"
