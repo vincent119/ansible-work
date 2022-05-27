@@ -21,3 +21,12 @@
   register: profile_status
 
 - debug: msg="profile={{profile_status.stdout}}"
+
+
+- name: apt install package
+  apt:
+    name:
+      - libncurses5
+    state: latest
+    update_cache: yes
+  become: true
