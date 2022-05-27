@@ -1,0 +1,57 @@
+---
+- name: "check source {{mariadb_APP_dir}}"
+  stat:
+    path: "{{ mariadb_APP_dir }}"
+  register: source_status
+
+- debug: 
+    msg: "{{mariadb_APP_dir}} not find" 
+  when:  not source_status.stat.exists
+
+- name: "Create source {{mariadb_APP_dir}} directory if it doesn't exist"
+  ansible.builtin.file:
+    path: "{{mariadb_APP_dir}}"
+    state: directory
+    recurse: true
+  become: true
+  when: not source_status.stat.exists
+  register: dir_result
+
+- debug: 
+    msg: "{{mariadb_APP_dir}} already exists"
+  when:  source_status.stat.exists
+
+- debug: 
+    msg: "Succeed Created the {{mariadb_APP_dir}}"
+  when:  source_status.stat.exists is defined and not source_status.stat.exists
+
+
+
+- name: "check source {{mariadb_DB_dir}}"
+  stat:
+    path: "{{ mariadb_DB_dir }}"
+  register: source_status
+
+- debug: 
+    msg: "{{mariadb_DB_dir}} not find"
+  when:  not source_status.stat.exists
+
+- name: "Create source {{mariadb_DB_dir}} directory if it doesn't exist"
+  ansible.builtin.file:
+    path: "{{mariadb_DB_dir}}"
+    state: directory
+    recurse: true
+  become: true
+  when: not source_status.stat.exists
+  register: dir_result
+
+- debug: 
+    msg: "{{mariadb_DB_dir}} already exists"
+  when:  source_status.stat.exists
+
+- debug: 
+    msg: "Succeed Created the {{mariadb_DB_dir}}"
+  when:  source_status.stat.exists is defined and not source_status.stat.exists
+
+
+

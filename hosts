@@ -11,7 +11,10 @@
 t1 ansible_host=172.16.99.203 ansible_user=root
 t2 ansible_host=172.16.99.204  ansible_user=vincent
 # Ex 1: Ungrouped hosts, specify before any group headers.
-
+[db1]
+d1 ansible_host=172.16.99.207 ansible_user=root
+d2 ansible_host=172.16.99.208 ansible_user=root
+d3 ansible_host=172.16.99.209 ansible_user=root
 ## green.example.com
 ## blue.example.com
 ## 192.168.100.1

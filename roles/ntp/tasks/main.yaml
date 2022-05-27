@@ -1,7 +1,7 @@
 ---
 - include_tasks: ntp-Redhat.yaml
-  when: ansible_distribution == 'RedHat' or ansible_distribution == "Centos"
-
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+  
 - include_tasks: ntp-Ubuntu.yaml
   when: ansible_distribution == "Ubuntu"
   

@@ -1,5 +1,5 @@
 ---
-- hosts: test2
+- hosts: db2
   # tasks:
   # - name: yum install ntpdate
   #   yum:
@@ -13,6 +13,7 @@
     #- { role: openresty, become: yes }
    #- { role: Docker, become: yes }
    #- { role: os_init, become: yes }
-   - { role: ntp, become: yes }
-   #- { role: ntpdate, becosssme: yes, become_method: sudo }
+   #- { role: ntp, become: yes }
+   #- { role: ntpdate, become: yes, become_method: sudo }
+    - { role: mariadb , become: yes }
   #    - { role: ntpdate, become: yes }

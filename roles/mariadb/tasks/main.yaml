@@ -1,0 +1,11 @@
+---
+#- include_tasks: user.yaml
+#- include_tasks: init.yaml
+# - include_tasks: install-db.yaml
+#   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu"
+# - include_tasks: Redhat-env.yaml
+#   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+# - include_tasks: Ubuntu-env.yaml
+#   when: ansible_distribution == "Ubuntu"
+- include_tasks: setup-db.yaml
+  
