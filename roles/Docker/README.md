@@ -4,4 +4,4 @@
 ### os base
  - Centos7
   
- -  Ubuntu 22.04
+ - Ubuntu 22.04

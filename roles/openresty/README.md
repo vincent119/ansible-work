@@ -1,11 +1,12 @@
 # openresty
 
 * openresty version
+  
   -- "1.19.9.1"
 * os base
   
   -- Centos 7
-  
+
   -- Ubuntu 22.04
   
 
