@@ -2,6 +2,8 @@
 mariadb_download_url: "https://dlm.mariadb.com/2314683/MariaDB"
 mariadb_version: 10.8.3
 
+
+
 mariadb_gz_file: "mariadb-{{mariadb_version}}-{{mariadb_platform}}.tar.gz"
 mariadb_ver: "mariadb-{{mariadb_version}}"
 mariadb_APP_dir: "/opt/APP"
@@ -21,6 +23,7 @@ mariadb_socket_path: "/var/run/mysqld"
 mariadb_socket: "{{mariadb_socket_path}}/mysql.soket"
 mariadb_lc_messages_dir: "{{mariadb_base_path}}/share"
 mariadb_lc_messages: "en_US"
+mariadb_innodb_autoinc_lock_mode: 2
 mariadb_bind_address: "0.0.0.0"
 mariadb_key_buffer_size: "128M"
 mariadb_max_connections: "100"
@@ -61,7 +64,8 @@ mariadb_binlog_format: "row"
 mariadb_expire_logs_days: "7"
 # InnoDB  
 # innodb_log_group_capacity = innodb_log_file_size * innodb_log_files_in_group
-mariadb_default_storage_engine: "InnoDB"
+mariadb_default_storage_engine: "innodb"
+mariadb_innodb_data_file_path: "ibdata1:50M:autoextend"
 mariadb_innodb_buffer_pool_size: "256M"
 mariadb_innodb_buffer_pool_instances: 4
 mariadb_innodb_log_buffer_size: "8M"
@@ -72,6 +76,15 @@ mariadb_innodb_flush_method: "O_DIRECT"
 mariadb_innodb_read_io_threads: 64
 mariadb_innodb_write_io_threads: 64
 mariadb_innodb_flush_log_at_trx_commit: 0
-mariadb_innodb_log_file_size: "512M"
 mariadb_innodb_lock_wait_timeout: 10
+mariadb_innodb_log_file_size: "512M"
+mariadb_innodb_log_files_in_group: 2
+##innodb_log_group_capacity = innodb_log_file_size * innodb_log_files_in_group
 ##
+galera_cluster_nodes_group: "galera-cluster-nodes"
+galera_wsrep_on: "ON"
+galera_lib_path: "{{mariadb_base_path}}/lib/galera/libgalera_smm.so"
+galera_wsrep_cluster_name: "cluster1"
+galera_wsrep_sst_method: "rsync"
+##Valid Values: rsync, mysqldump, xtrabackup, xtrabackup-v2, mariabackup
+galera_wsrep_provider_options: "gcache.size=300M; gcache.page_size=300M"    

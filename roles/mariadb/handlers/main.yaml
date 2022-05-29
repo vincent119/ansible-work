@@ -1,9 +1,16 @@
 ---
 - name: reload mariadb
-  service: name=mariadb state=reloaded
+  service: 
+    name: mariadb 
+    state: reloaded
+  become: true
 
 - name: restart mariadb
-  service: name=nginx enabled=yes state=restarted
+  service: 
+    name: mariadb 
+    enabled: true
+    state: stop
+  become: true
 
 
 

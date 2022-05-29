@@ -1,0 +1,28 @@
+---
+
+
+
+mariadb_url: "{{mariadb_download_url}}/{{mariadb_ver}}/bintar-{{mariadb_platform}}/{{mariadb_gz_file}}"
+mariadb_platform: linux-systemd-x86_64
+
+
+Galera_sha256_file: sha256:https://archive.mariadb.org/mariadb-10.8.3/galera-26.4.11/bintar/sha256sums.txt
+
+sha256sums_files: sha256:https://dlm.mariadb.com/2314681/MariaDB/mariadb-10.8.3/bintar-linux-systemd-x86_64/sha256sums.txt
+
+
+
+
+
+
+
+mariadb_checksums:
+  "10.8.3":
+    linux-systemd-x86_64: sha256:e27a7d28ecf2c86b79dd7048bc42ef82c6e06db8ecfaf308d0fbf0623ebe33e7
+    #linux-systemd-x86_64: sha256:"{{mariadb_download_url}}/{{mariadb_ver}}/bintar-{{mariadb_platform}}/sha256sums.txt"
+    md5: md5:"{{mariadb_download_url}}/{{mariadb_ver}}/bintar-{{mariadb_platform}}{{mariadb_platform}}/md5sums.txt"
+    sha512: sha512:"{{mariadb_download_url}}/{{mariadb_ver}}/bintar-{{mariadb_platform}}/sha512sums.txt"
+
+
+
+

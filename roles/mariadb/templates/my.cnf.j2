@@ -41,6 +41,7 @@ datadir         = {{mariadb_DB_dir}}
 tmpdir          = /tmp
 lc_messages_dir = {{mariadb_lc_messages_dir}}
 lc_messages     = {{mariadb_lc_messages}}
+innodb_autoinc_lock_mode= {{mariadb_innodb_autoinc_lock_mode}}
 skip-external-locking
 #
 # Instead of skip-networking the default is now to listen only on
@@ -68,7 +69,7 @@ read_rnd_buffer_size    = {{mariadb_read_rnd_buffer_size}}
 #
 # This replaces the startup script and checks MyISAM tables if needed
 # the first time they are touched. On error, make copy and try a repair.
-myisam_recover         = {{mariadb_myisam_recover}}
+#myisam_recover         = {{mariadb_myisam_recover}}
 #open-files-limit       = 2000
 table_open_cache        = {{mariadb_table_open_cache}}
 #table_cache            = 64
@@ -141,7 +142,6 @@ expire_logs_days = {{mariadb_expire_logs_days}}
 # Read the manual for more InnoDB related options. There are many!
 default_storage_engine  = {{mariadb_default_storage_engine}}
 # you can't just change log file size, requires special procedure
-innodb_log_file_size   =  {{mariadb_innodb_log_file_size}}
 innodb_buffer_pool_size = {{mariadb_innodb_buffer_pool_size}}
 #innodb_buffer_pool_instances = {{mariadb_innodb_buffer_pool_instances}}
 innodb_log_buffer_size  = {{mariadb_innodb_log_buffer_size}}
@@ -153,6 +153,11 @@ innodb_read_io_threads = {{mariadb_innodb_read_io_threads}}
 innodb_write_io_threads = {{mariadb_innodb_write_io_threads}}
 innodb_flush_log_at_trx_commit = {{mariadb_innodb_flush_log_at_trx_commit}}
 innodb_lock_wait_timeout = {{mariadb_innodb_lock_wait_timeout}}
+innodb_data_file_path={{mariadb_innodb_data_file_path}}
+#innodb_log_group_home_dir={{mariadb_DB_dir}}/redolog/
+innodb_log_file_size   =  {{mariadb_innodb_log_file_size}}
+#innodb_log_files_in_group = {{mariadb_innodb_log_files_in_group}}
+
 #
 # * Security Features
 #
@@ -175,6 +180,20 @@ max_allowed_packet      = 16M
 
 [isamchk]
 key_buffer         = 16M
+
+
+
+[galera]
+wsrep_on=ON
+wsrep_node_name={{ ansible_hostname }}
+wsrep_provider={{galera_lib_path}}
+wsrep_provider_options={{galera_wsrep_provider_options}}  
+wsrep_cluster_name={{galera_wsrep_cluster_name}}
+wsrep_cluster_address="gcomm://{% for host in groups[galera_cluster_nodes_group] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
+wsrep_node_address={{ansible_default_ipv4.address}}
+wsrep_sst_method={{galera_wsrep_sst_method}}
+
+
 
 #
 # * IMPORTANT: Additional settings that can override those from this file!

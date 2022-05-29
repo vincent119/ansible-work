@@ -1,0 +1,62 @@
+---
+- name: checking owner_group {{ mariadb_group }}
+  ansible.builtin.group:
+    name: "{{ mariadb_group }}"
+    state: present
+  check_mode: true
+  register: group_status
+
+# - name: output group_status result above
+#   debug:
+#     msg: "{{ group_status }}"
+
+- name: checking owner_user {{ mariadb_user }}
+  user: 
+     name: "{{ mariadb_user }}"
+     state: present
+  check_mode: true
+  register: user_status
+
+# - name: output user_status result above
+#   debug:
+#     msg: "{{ user_status }}"
+
+- name: add Group {{ mariadb_group }}
+  ansible.builtin.group:
+    name: "{{ mariadb_group }}"
+    gid: "{{ mariadb_group_GID }}"
+    state: present
+  when: group_status.state is not defined
+  register: addGroup_status
+
+- debug: 
+    msg: "Succeed in Create Group {{ mariadb_group }}"
+  #changed_when: true
+  when: group_status.state is not defined
+
+- debug: 
+    msg: "{{ mariadb_group }} the group exists"
+  #changed_when: true
+  when: group_status.state is defined
+
+- name: add User {{ mariadb_user }}
+  user:
+    name: "{{ mariadb_user }}"
+    groups: "{{ mariadb_group }}"
+    shell: /bin/bash
+    uid: "{{ mariadb_user_UID }}"
+    append: true
+    state: present
+  become: true
+  when: user_status.state is not defined
+  register: addUser_status
+
+- debug: 
+   msg: "Succeed in Create User {{ mariadb_user }}"
+  #changed_when: true
+  when: user_status.state is not defined and addUser_status is defined
+
+- debug: 
+    msg: "{{ mariadb_group }} the group exists"
+  #changed_when: true
+  when: user_status.state is defined

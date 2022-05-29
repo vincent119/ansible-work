@@ -1,0 +1,78 @@
+---
+
+- name: Check remote mariadb file exists
+  stat: path="{{mariadb_APP_dir}}/mariadb"
+  register: mariadb_install_path
+
+- name: Check remote {{mariadb_APP_dir}}/{{mariadb_gz_file}} file exists
+  stat: path="{{mariadb_APP_dir}}/{{mariadb_gz_file}}"
+  register: mariadb_gz_status
+
+- name: download file to mariadb_install_path  
+  get_url:
+    url: "{{mariadb_url}}"
+    validate_certs: yes
+    dest: "{{mariadb_APP_dir}}"
+    force: yes
+    checksum: "{{sha256sums_files}}"
+  register: download_status
+  when: (not mariadb_install_path.stat.exists) and (not mariadb_gz_status.stat.exists)
+
+- name: "unarchive mariadb gz file"
+  ansible.builtin.unarchive:
+    src: "{{mariadb_APP_dir}}/{{mariadb_gz_file}}"
+    dest: "{{mariadb_APP_dir}}"
+    remote_src: true
+  register: unarchive_status
+  when: download_status is succeeded
+
+- name: soft link{{mariadb_gz_file}} to mariadb
+  ansible.builtin.file:
+    src: "{{mariadb_APP_dir}}/mariadb-{{mariadb_version}}-{{mariadb_platform}}"
+    dest: "{{mariadb_APP_dir}}/mariadb"
+    state: link
+    owner: "{{mariadb_user}}"
+    group: "{{mariadb_group}}"
+  when: unarchive_status is succeeded
+
+- name: "check source {{mariadb_log_path}}"
+  stat:
+    path: "{{mariadb_log_path}}"
+  register: source_status
+- debug: 
+    msg: "{{mariadb_log_path}} not find"
+  when:  not source_status.stat.exists
+
+- name: "Create source {{mariadb_log_path}} directory if it doesn't exist"
+  ansible.builtin.file:
+    path: "{{item}}"
+    state: directory
+    recurse: true
+  with_items: 
+    - "{{mariadb_log_path}}"
+    - "{{mariadb_socket_path}}"
+  become: true
+  when: not source_status.stat.exists
+  register: dir_result
+
+- debug: 
+    msg: "{{mariadb_log_path}} already exists"
+  when:  source_status.stat.exists
+
+- debug: 
+    msg: "Succeed Created the {{mariadb_log_path}}"
+  when:  source_status.stat.exists is defined and not source_status.stat.exists
+
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{item}}"
+    owner: "{{mariadb_user}}"
+    group: "{{mariadb_group}}"
+    recurse: true
+  with_items: 
+      #- "{{mariadb_APP_dir}}/mariadb"
+      - "{{mariadb_APP_dir}}/mariadb-{{mariadb_version}}-{{mariadb_platform}}"
+      - "{{mariadb_DB_dir}}"
+      - "{{mariadb_socket_path}}"
+  register: file_status
+

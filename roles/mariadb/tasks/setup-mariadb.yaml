@@ -18,8 +18,9 @@
     dest: "{{mariadb_bin_path}}/galera_recovery"
     owner: "{{mariadb_user}}"
     group: "{{mariadb_group}}"
-    mode: 075my5
-    force: true
+    mode: 0755
+    force: true 
+  become: true
 
 
 - name: create mariadb service for systemd
@@ -29,5 +30,6 @@
     owner: root
     group: root
     mode: 0644
+  become: true
   when: ansible_service_mgr == 'systemd'
 
