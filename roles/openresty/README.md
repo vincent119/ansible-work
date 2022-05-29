@@ -8,8 +8,12 @@
   -- Centos 7
 
   -- Ubuntu 22.04
-  
 
+ update version in vars/main.yaml  
+
+```bash
+openresty_version: "1.19.9.1"
+```
 
 
 
