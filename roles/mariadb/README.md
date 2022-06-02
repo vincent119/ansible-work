@@ -5,7 +5,9 @@
 
 example
 ```bash
- - { role: mariadb , become: yes, cluster: true}
+- hosts: galera-cluster-nodes
+  roles:
+    - { role: mariadb , become: yes, cluster: true}
 ```
 ```bash
 cluster: true
@@ -15,6 +17,20 @@ Enable MariaDB Galera Cluste
 cluster: false
 ```
 not use Galera Cluste
+
+```bash
+galera-cluster-nodes
+
+```
+galera-cluster-nodes group name 
+
+example in ansible hosts
+```bash
+[galera-cluster-nodes]
+172.16.99.207
+172.16.99.208
+172.16.99.209
+```
 
 mariadb 設定
 vars/main.yaml

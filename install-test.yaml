@@ -1,21 +1,5 @@
 ---
 - hosts: galera-cluster-nodes
-#- hosts: 127.0.0.1
-  # tasks:
-  # - name: yum install ntpdate
-  #   yum:
-  #     name: ntp
-  #     state: present
-  # vars:
-  #  - go_ver: '1.18.1'
-  #  - go_platform: linux-amd64
-  #  - url: 'https://go.dev/dl/go1.18.1.linux-amd64.tar.gz'
   roles:
-   # - { role: openresty, become: yes }
-   #- { role: Docker, become: yes }
-   #- { role: os_init, become: yes }
-   #- { role: ntp, become: yes }
-   #- { role: ntpdate, become: yes, become_method: sudo }
     - { role: mariadb , become: yes, cluster: true}
 
-  #    - { role: ntpdate, become: yes }
