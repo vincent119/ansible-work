@@ -9,7 +9,7 @@ upstream Front_web_10034 {
 server {
   listen 80;
   server_name ; 
-  access_log {{openresty_log_path}}}/034-cp66.access.log main;
+  access_log {{openresty_log_path}}/034-cp66.access.log main;
   error_log {{openresty_log_path}}/034-cp66.error.log;
   
   location /robots.txt {return 200 "User-agent: *\nDisallow: /\n";}

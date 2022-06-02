@@ -5,9 +5,19 @@
     dest: "/etc/{{ item }}"
   with_items:
     - my.cnf
+  when: cluster == False
+
+- name: install default mariadb cluster my.cnf
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "/etc/my.cnf"
+  with_items:
+    - my.cnf-cluster
+  when: cluster == True
+
 
 - name: setup mariadb db 
-  shell: "/opt/APP/mariadb/scripts/mysql_install_db --user={{mariadb_user}} --datadir={{mariadb_DB_dir}} --basedir={{mariadb_base_path}}/"
+  shell: "{{mariadb_base_path}}/scripts/mysql_install_db --user={{mariadb_user}} --datadir={{mariadb_DB_dir}} --basedir={{mariadb_base_path}}/ --auth-root-authentication-method=socket"
   register: install_db_status
 
 - debug: msg="{{install_db_status}}"
@@ -19,8 +29,8 @@
     owner: "{{mariadb_user}}"
     group: "{{mariadb_group}}"
     mode: 0755
-    force: true 
-  become: true
+    force: True 
+  become: True
 
 
 - name: create mariadb service for systemd
@@ -33,3 +43,28 @@
   become: true
   when: ansible_service_mgr == 'systemd'
 
+
+- name: Ensure service is started
+  service:
+    name: "mariadb.service"
+    state: started
+    enabled: true
+  tags: mariadb
+  when:  cluster == false or cluster is undefined
+
+- debug: msg="{{ansible_all_ipv4_addresses}}"
+
+
+- name: setup_cluster | bootstrapping galera cluster
+  command: "{{mariadb_bin_path}}/galera_new_cluster"
+  become: true
+  run_once: true
+  when: inventory_hostname ==  galera_cluster_first_nodes and  cluster == true 
+
+- name: cluster service is started
+  service:
+    name: "mariadb.service"
+    state: started
+    enabled: true
+  tags: mariadb
+  when:  cluster == true

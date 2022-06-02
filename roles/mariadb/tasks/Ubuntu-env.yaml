@@ -22,7 +22,6 @@
 
 - debug: msg="profile={{profile_status.stdout}}"
 
-
 - name: apt install package
   apt:
     name:
@@ -32,9 +31,17 @@
       - gdebi-core
       - openssl
       - libz-dev
+      - python3-pip
+      - mysql-client
     state: latest
     update_cache: yes
   become: true
+
+- name: install python pymysql
+  pip:
+    name: PyMySQL
+
+
 
 - name: "check /lib/x86_64-linux-gnu libssl.so.1.0.0"
   stat: 
@@ -42,20 +49,17 @@
   become: true
   register: check_libssl
 
-
 - name: "check /lib/x86_64-linux-gnu  libcrypto.so.1.0.0"
   stat:
     path: "/lib/x86_64-linux-gnu/libcrypto.so.1.0.0"
   become: true
   register: check_libcrypto
 
-
 - debug: msg="libssl.so.1.0.0 file doesn't exist"
   when: not check_libssl.stat.exists
 
 - debug: msg="libcrypto.so.1.0.0 file doesn't  exist"
   when: not check_libcrypto.stat.exists
-
 
 - name: "copy  openssl-1.0.1e.tar.gz openssl-1.0.1e.tar.gz to /tmp"
   copy:
@@ -65,4 +69,27 @@
 
 - name: unzip openssl-1.0.1e.tar.gz 
   ansible.builtin.shell: "cd /tmp/ && tar zxvf openssl-1.0.1e.tar.gz && cd openssl-1.0.1e && ./config shared zlib-dynamic && make"
+  when: (not check_libssl.stat.exists) and (not check_libcrypto.stat.exists)
+
+- name: "copy link libssl.so.1.0.0 libcrypto.so.1.0.0 to /lib/x86_64-linux-gnu"
+  shell: "cd /tmp/openssl-1.0.1e && cp libssl.so.1.0.0 libcrypto.so.1.0.0 /lib/x86_64-linux-gnu"
+
+- name: soft link libcrypto.so.1.0.0
+  ansible.builtin.file:
+    src: /lib/x86_64-linux-gnu/libssl.so
+    dest: "/lib/x86_64-linux-gnu/{{item}}"
+    state: link
+  with_items:
+    - libssl.so.1.0.0
+    - libcrypto.so.10
+  when: (not check_libssl.stat.exists) and (not check_libcrypto.stat.exists)
+
+- name: soft link libcrypto.so.1.0.0
+  ansible.builtin.file:
+    src: /lib/x86_64-linux-gnu/libcrypto.so
+    dest: "/lib/x86_64-linux-gnu/{{item}}"
+    state: link
+  with_items:
+    - libcrypto.so.1.0.0
+    - libcrypto.so.10
   when: (not check_libssl.stat.exists) and (not check_libcrypto.stat.exists)

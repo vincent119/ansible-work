@@ -1,0 +1,57 @@
+---
+
+# - name: Check if root password is unset
+#   shell: >
+#     "{{mariadb_bin_path}}"/mysql -u root
+#     -p'{{ mariadb_root_password }}'
+#     -h localhost
+#     -S {{ mariadb_socket }}
+#     -e "quit"
+#   changed_when: false
+#   ignore_errors: true
+#   become: true
+#   register: root_pwd_check
+#   tags: mariadb
+
+
+
+- name: update mysql root password for all root accounts
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mariadb_socket }}"
+    login_user: root
+    login_password: ""
+    name: root
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password }}"
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+    - '*'
+
+- name: update mysql root password for second admin
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mariadb_socket }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    name: "{{mariadb_second_admin}}"
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password }}"
+  with_items:
+    - "*"
+    - "localhost"
+  when:  cluster == false
+
+- name: update mysql root password for second admin
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mariadb_socket }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    name: "{{mariadb_second_admin}}"
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password }}"
+  with_items:
+    - "{{groups[galera_cluster_nodes_group]}}"
+    - "*"
+    - "localhost"
+  when:  cluster == true

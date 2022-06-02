@@ -1,0 +1,26 @@
+---
+
+- name: show db user permission
+  community.mysql.mysql_query:
+    login_unix_socket: "{{ mariadb_socket }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_db: mysql
+    query: select host,user,password from user;
+  register: user_status
+
+- debug: msg="{{user_status.query_result }}"
+ 
+
+
+- name: show cluster wsrep_cluster_size
+  community.mysql.mysql_query:
+    login_unix_socket: "{{ mariadb_socket }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_db: mysql
+    query: SHOW GLOBAL STATUS LIKE 'wsrep_cluster_size';
+  register: cluster_status
+
+- debug: msg="{{cluster_status.query_result }}"
+

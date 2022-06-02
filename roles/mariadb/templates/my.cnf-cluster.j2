@@ -187,6 +187,18 @@ key_buffer         = 16M
 
 
 
+
+[galera]
+wsrep_on=ON
+wsrep_node_name={{ ansible_hostname }}
+wsrep_provider={{galera_lib_path}}
+wsrep_provider_options={{galera_wsrep_provider_options}}  
+wsrep_cluster_name={{galera_wsrep_cluster_name}}
+wsrep_cluster_address="gcomm://{% for host in groups[galera_cluster_nodes_group] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
+wsrep_node_address={{ansible_default_ipv4.address}}
+wsrep_sst_method={{galera_wsrep_sst_method}}
+
+
 #
 # * IMPORTANT: Additional settings that can override those from this file!
 #   The files must end with '.cnf', otherwise they'll be ignored.

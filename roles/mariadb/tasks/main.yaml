@@ -1,10 +1,18 @@
 ---
-# - include_tasks: user.yaml
-#- include_tasks: init.yaml
-#- include_tasks: install-db.yaml
-#   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu"
-# - include_tasks: Redhat-env.yaml
-#   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+- include_tasks: user.yaml
+- include_tasks: init.yaml
+- include_tasks: install-db.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu"
+- include_tasks: Redhat-env.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
 - include_tasks: Ubuntu-env.yaml
   when: ansible_distribution == "Ubuntu"
-#- include_tasks: setup-mariadb.yaml
+- include_tasks: setup-mariadb.yaml
+- debug: msg="{{groups[galera_cluster_nodes_group][0]}}"
+
+# - debug: msg="{{cluster | default(False)}}"
+#   when:  cluster == True or cluster is undefined
+# - debug: msg="{{cluster}}"
+- include_tasks: set-root-access.yaml
+- include_tasks: Cluster-status.yaml
+  when:  cluster == True

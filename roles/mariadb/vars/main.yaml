@@ -15,6 +15,10 @@ mariadb_user: "mysql"
 mariadb_group: "mysql"
 mariadb_group_GID: 1200
 mariadb_user_UID: 1200
+mariadb_root_name: "root"
+mariadb_second_admin: "dbadmin"
+mariadb_root_password: "123456"
+
 mariadb_print_defaults: "{{mariadb_APP_dir}}/mariadb/bin/my_print_defaults"
 profile_file: "/etc/profile"
 #### mysqld config
@@ -82,6 +86,7 @@ mariadb_innodb_log_files_in_group: 2
 ##innodb_log_group_capacity = innodb_log_file_size * innodb_log_files_in_group
 ##
 galera_cluster_nodes_group: "galera-cluster-nodes"
+galera_cluster_first_nodes: "{{groups[galera_cluster_nodes_group][0]}}"
 galera_wsrep_on: "ON"
 galera_lib_path: "{{mariadb_base_path}}/lib/galera/libgalera_smm.so"
 galera_wsrep_cluster_name: "cluster1"

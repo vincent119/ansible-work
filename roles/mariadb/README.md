@@ -3,9 +3,18 @@
 
 
 
-
-
-
+example
+```bash
+ - { role: mariadb , become: yes, cluster: true}
+```
+```bash
+cluster: true
+```
+Enable MariaDB Galera Cluste
+```bash
+cluster: false
+```
+not use Galera Cluste
 
 mariadb 設定
 vars/main.yaml
