@@ -19,6 +19,7 @@
 [client]
 port = {{mariadb_port}}
 socket = {{mariadb_socket}}
+default-character-set = {{mariadb_character_set}}
 
 # Here is entries for some specific programs
 # The following values assume you have at least 32M ram
@@ -32,6 +33,7 @@ nice    = 0
 #
 # * Basic Settings
 #
+default-character-set =  {{mariadb_character_set}}
 user            = {{mariadb_user}}
 pid_file        = /var/run/mysqld/mysqld.pid
 socket          = {{mariadb_socket}}

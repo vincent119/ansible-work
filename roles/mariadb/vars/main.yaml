@@ -18,7 +18,7 @@ mariadb_user_UID: 1200
 mariadb_root_name: "root"
 mariadb_second_admin: "dbadmin"
 mariadb_root_password: "123456"
-
+mariadb_character_set: "utf8mb4"
 mariadb_print_defaults: "{{mariadb_APP_dir}}/mariadb/bin/my_print_defaults"
 profile_file: "/etc/profile"
 #### mysqld config
