@@ -1,5 +1,6 @@
 ---
-- hosts: galera-cluster-nodes
+- hosts: db3
   roles:
-    - { role: mariadb , become: yes, cluster: true}
+    - { role: Chrony , become: yes}
+    #- { role: mariadb , become: yes, cluster: true}
 

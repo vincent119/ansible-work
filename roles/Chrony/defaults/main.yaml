@@ -1,0 +1,8 @@
+---
+
+
+chrony_config_server:
+  - server time1.google.com iburst
+  - server time2.google.com iburst
+  - server time3.google.com iburst
+  - server time4.google.com iburst

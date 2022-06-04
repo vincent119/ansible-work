@@ -1,0 +1,8 @@
+---
+
+- include_vars: "{{ role_path }}/vars/{{ansible_distribution | lower }}.yaml"
+
+- include_tasks: centos.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" 
+- include_tasks: Ubuntu.yaml
+  when: ansible_distribution == "Ubuntu"

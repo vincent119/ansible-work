@@ -1,0 +1,24 @@
+---
+
+- name: Yum Install Chrony
+  yum: 
+    name: chrony
+    state: latest
+    update_cache: yes
+
+
+
+- name: 'Configure Chrony'
+  become: true
+  template:
+    src: "{{ role_path }}/templates/chrony.conf.j2"
+    dest: "{{ chrony_conf_file }}"
+  notify: 'restart chrony'
+
+
+
+- name: Ensure chrony services is started and enabled at boot
+  service:
+    name: "{{ chrony_service_name }}"
+    state: started
+    enabled: yes
