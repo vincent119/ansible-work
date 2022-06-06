@@ -1,9 +1,17 @@
 
 
+
+
+os base:
+  - centos 7
+  - Ubuntu 22.04
+
+Redis version:
+  - 6.2.7
+
 ## redis single node
 
 ```bash
-
 - hosts: node1
   roles:
     - { role: Redis , become: yes}
