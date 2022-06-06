@@ -18,7 +18,8 @@ redis_user: "redis"
 redis_group: "redis"
 redis_daemon: "redis"
 redis_sentinel_daemon: "redis_sentinel_daemon"
-
+redis_auth: true
+redis_requirepass: "1234567"
 redis_bind: 0.0.0.0
 redis_port: 6379
 redis_timeout: 0
