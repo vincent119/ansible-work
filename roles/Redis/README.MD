@@ -18,7 +18,12 @@ Redis version:
 
 ```
 
+## start/stop redis service
+```
+systemctl start redis
+systemctl stop redis
 
+```
 
 
 
@@ -57,10 +62,16 @@ ansible/hosts
 172.16.99.209 
 ```
 
+## start/stop redis service
+```
+systemctl start redis
+systemctl stop redis
+
+```
 
 
 
-Redis replication + sentinel
+## Redis replication + sentinel
 
 ```mermaid
 flowchart LR
@@ -73,7 +84,7 @@ C[redis3 sentine3 slave] <-.monitor.-> B[ redis2 sentine2 slave]
 ```
 ```bash
 
-- hosts: node1
+- hosts: redis-replication-nodes
   roles:
     - { role: Redis , become: yes, replication: true , sentinel: true }
 
@@ -91,3 +102,15 @@ redis_failover_timeout: 18000
 ````
 
 
+## start/stop redis and sentinel service 
+*** start up  service from the first node ***
+```
+start
+systemctl start redis
+systemctl start redis-sentinel
+
+
+stop 
+systemctl stop redis
+systemctl stop redis-sentinel
+```
