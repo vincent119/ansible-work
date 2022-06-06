@@ -1,6 +1,6 @@
 ---
-- hosts: db3
+- hosts: redis-replication-nodes
   roles:
-    - { role: Chrony , become: yes}
+    - { role: Redis , become: yes, replication: true ,sentinel: true}
     #- { role: mariadb , become: yes, cluster: true}
 

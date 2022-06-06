@@ -1,0 +1,14 @@
+[Unit]
+Description=Redis Sentinel
+After=network.target
+
+[Service]
+User={{redis_user}}
+Group={{redis_group}}
+ExecStart={{redis_bin_path}}/redis-sentinel {{redis_sentinel_conf_path}} --sentinel
+ExecStop={{redis_bin_path}}/redis-cli -p {{redis_sentinel_port}} shutdown
+Restart=always
+PIDFile={{redis_sentinel_pidfile}}
+Type=notify
+[Install]
+WantedBy=multi-user.target

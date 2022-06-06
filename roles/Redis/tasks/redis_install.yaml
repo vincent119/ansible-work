@@ -1,0 +1,102 @@
+---
+# - name: redis package download
+#   get_url:
+#     url: "{{redis_download}}"
+#     dest: "{{redis_source_path}}"
+
+
+# - name: unzip redis package
+#   shell: cd "{{redis_source_path}}" &&  tar zxvf "redis-{{redis_gz_file}}" && cd "redis-{{ redis_version }}"
+#   register: unzip_status
+
+# - name: make redis package
+#   command: make USE_SYSTEMD=yes BUILD_WITH_SYSTEMD=yes PREFIX={{redis_app_path}}/redis-{{ redis_version }}
+#   args:
+#    chdir: "{{redis_source_path}}/redis-{{ redis_version }}"
+#   register: make_status
+
+# #- debug: msg="{{make_status.stdout}}"
+
+# - name: make test redis package
+#   command: make test
+#   args:
+#    chdir: "{{redis_source_path}}/redis-{{ redis_version }}"
+#   register: make_test_status
+#   when: make_status.stderr == ""
+
+
+# - debug: msg="{{make_test_status}}"
+
+# - name: make install redis package
+#   command: make install PREFIX={{redis_app_path}}/redis-{{ redis_version }}
+#   args:
+#    chdir: "{{redis_source_path}}/redis-{{ redis_version }}"
+#   register: make_install_status
+#   when: make_status.stderr == ""
+
+# - debug: msg="{{make_install_status.stderr}}"
+
+# - name: soft link redis-{{ redis_version }} to redis
+#   file:
+#     src: "{{redis_app_path}}/redis-{{ redis_version }}"
+#     dest: "{{redis_app_path}}/redis"
+#     state: link
+#     owner: "{{redis_user}}"
+#     group: "{{redis_group}}"
+
+
+# - name: install default redis configuration
+#   template:
+#     src: "{{ role_path }}/templates/{{ item }}.j2"
+#     dest: "{{redis_app_path}}/redis/{{ item }}"
+#     owner: "{{redis_user}}"
+#   with_items:
+#     - redis.conf
+
+# - name: Change Owner with folder file 
+#   ansible.builtin.file:
+#     path: "{{item}}"
+#     owner: "{{redis_user}}"
+#     group: "{{redis_group}}"
+#     recurse: true
+#   with_items:
+#     - "{{redis_log_path}}"
+#     - "{{redis_app_path}}/redis-{{redis_version}}"
+#     - "{{redis_db_dir}}"
+
+# - name: create redis service for systemd
+#   template:
+#     src: "{{ role_path }}/templates/systemd-redis_server.service.j2"
+#     dest: /etc/systemd/system/redis.service
+#     owner: root
+#     group: root
+#     mode: 0644
+#   when: ansible_service_mgr == 'systemd'
+
+# - name: reload systemd
+#   shell: systemctl daemon-reload
+#   become: true
+
+# - name: Ensure Redis is running and enabled on boot.
+#   service: 
+#     name: "{{ redis_daemon }}"
+#     state: started 
+#     enabled: yes
+
+- name: redis_sentinel config copy
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{redis_app_path}}/redis/{{ item }}"
+    owner: "{{redis_user}}"
+  with_items:
+    - sentinel.conf
+  when: replication == true and sentinel == true
+
+- name: create redis service for systemd
+  template:
+    src: "{{ role_path }}/templates/redis-sentinel.service.j2"
+    dest: /etc/systemd/system/redis-sentinel.service
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_service_mgr == 'systemd' and  replication == true and sentinel == true

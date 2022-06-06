@@ -1,0 +1,48 @@
+---
+- name: checking owner_group {{ redis_group }}
+  ansible.builtin.group:
+    name: "{{ redis_group }}"
+    state: present
+  check_mode: true
+  register: group_status
+
+# - name: output group_status result above
+#   debug:
+#     msg: "{{ group_status }}"
+
+- name: checking owner_user {{ redis_user }}
+  user: 
+     name: "{{ redis_user }}"
+     state: present
+  check_mode: true
+  register: user_status
+
+# - name: output user_status result above
+#   debug:
+#     msg: "{{ user_status }}"
+
+- name: add Group {{ redis_group }}
+  ansible.builtin.group:
+    name: "{{ redis_group }}"
+    state: present
+  when: group_status.state is not defined
+  register: addGroup_status
+
+- debug: 
+    msg: "Succeed in Create Group {{ redis_group }}"
+  changed_when: true
+
+- name: add User {{ redis_user }}
+  user:
+    name: "{{ redis_user }}"
+    groups: "{{ redis_group }}"
+    shell: /sbin/nologin
+    append: true
+    state: present
+  become: true
+  when: user_status.state is not defined
+  register: addUser_status
+
+- debug: 
+   msg: "Succeed in Create User {{ redis_user }}"
+  changed_when: true

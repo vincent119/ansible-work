@@ -1,0 +1,74 @@
+---
+# - include_vars: "{{ role_path }}/vars/{{ansible_distribution | lower }}.yaml"
+
+
+# - name: apt install dependability on package for Ubuntu
+#   apt:
+#     name:
+#       - libjemalloc2
+#       - liblua5.1-0 
+#       - liblzf1 
+#       - lua-bitop 
+#       - lua-cjson  
+#       - pkg-config
+#       - build-essential
+#       - libsystemd-dev
+#       - tcl
+#     state: present
+#   when: ansible_distribution == "Ubuntu"
+
+# - name: "yum install depend package for RedHat or Centos"
+#   yum:
+#     name: "{{item}}"
+#     update_cache: false
+#     state: present
+#   with_items:
+#     - epel-release
+#     - "@Development tools"
+#     - systemd-devel
+#     - tcl-devel
+#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
+#   register: yum_result
+
+# - debug: var=yum_result
+
+
+
+# - include_tasks: redis_user.yaml
+
+# - name: "check source {{redis_source_path}}"
+#   stat:
+#     path: "{{ redis_source_path }}"
+#   register: source_status
+
+# - debug: 
+#     msg: "{{source_status.stat.exists}}"
+#   #when:  not source_status.stat.exists
+
+# - name: "Create source {{redis_source_path}} directory if it doesn't exist"
+#   ansible.builtin.file:
+#     path: "{{item}}"
+#     state: directory
+#     recurse: true
+#   become: true
+#   with_items: 
+#     - "{{redis_source_path}}"
+#     - "{{redis_log_path}}"
+#     - "{{redis_db_path}}"
+#   #when: not source_status.stat.exists
+#   register: dir_result
+
+
+- include_tasks: redis_install.yaml
+
+
+
+- include_tasks: CentOS.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" 
+- include_tasks: Ubuntu.yaml
+  when: ansible_distribution == "Ubuntu"
+
+
+
+
+# - debug: msg="{{cluster}}" 
