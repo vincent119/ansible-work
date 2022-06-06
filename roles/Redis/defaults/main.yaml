@@ -4,7 +4,7 @@
 redis_version: 6.2.7
 redis_gz_file: "{{redis_version}}.tar.gz"
 redis_download: "https://github.com/redis/redis/archive/refs/tags/{{redis_gz_file}}"
-replication: true
+replication: false
 sentinel: false
 cluster: false
 #  redis_supervised systemd , auto ,no ,upstart
@@ -48,7 +48,7 @@ redis_replication_first_nodes: "{{groups[redis_replication_nodes_group][0]}}"
 redis_masteruser: "masteruser"
 redis_masterauth: "Theeb7oose" 
 
-##
+## Redis sentinel 
 redis_sentinel_conf_path: "{{redis_app_path}}/redis/sentinel.conf"
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: "/var/run/redis-sentinel.pid"
