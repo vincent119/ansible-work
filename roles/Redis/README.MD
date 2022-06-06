@@ -71,7 +71,7 @@ systemctl stop redis
 
 
 
-## Redis replication + sentinel
+## Redis Replica + sentinel
 
 ```mermaid
 flowchart LR

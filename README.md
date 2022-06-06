@@ -11,4 +11,4 @@
 |5| openresty| |[link](https://github.com/vincent119/ansible-work/tree/main/roles/openresty) |
 |6| os_init| timezone set, Disable SELinux |[link](https://github.com/vincent119/ansible-work/tree/main/roles/os_init) |
 |7| chrony |  times sync | [link](https://github.com/vincent119/ansible-work/tree/main/roles/Chrony)|
-|8| redis | single,replication,replication + sentinel    |  [link](https://github.com/vincent119/ansible-work/tree/main/roles/Redis) |
+|8| redis | single,Replica,Replica + sentinel    |  [link](https://github.com/vincent119/ansible-work/tree/main/roles/Redis) |
