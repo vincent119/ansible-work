@@ -1,9 +1,0 @@
----
-- name: reload mariadb
-  service: name=mariadb state=reloaded
-
-- name: restart mariadb
-  service: name=nginx enabled=yes state=restarted
-
-
-
