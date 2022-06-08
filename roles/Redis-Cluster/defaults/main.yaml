@@ -1,11 +1,13 @@
 ---
 
+
 redis_version: 6.2.7
 redis_gz_file: "{{redis_version}}.tar.gz"
 redis_download: "https://github.com/redis/redis/archive/refs/tags/{{redis_gz_file}}"
 replication: false
 sentinel: false
 cluster: false
+cluster_node_count: "{{groups[redis_replication_nodes_group]| length}}"
 #  redis_supervised systemd , auto ,no ,upstart
 redis_supervised: "systemd"
 redis_source_path: "/opt/source"
@@ -47,7 +49,7 @@ redis_save:
 redis_replication_nodes_group: "redis-replication-nodes"
 redis_replication_first_nodes: "{{groups[redis_replication_nodes_group][0]}}"
 redis_masteruser: "masteruser"
-redis_masterauth: "{{redis_requirepass}}"
+redis_masterauth: "{{redis_requirepass}}" 
 
 ## Redis sentinel 
 redis_sentinel_conf_path: "{{redis_app_path}}/redis/sentinel.conf"

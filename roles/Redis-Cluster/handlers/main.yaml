@@ -1,0 +1,16 @@
+---
+- name: restart redis
+  service: 
+    name: "{{redis_daemon}}"
+    state: "restarted"
+    enabled: true
+
+- name: restart redis sentinel
+  service: 
+    name: "{{redis_sentinel_daemon}}"
+    state: "restarted"
+    enabled: true  
+    
+    
+    
+    

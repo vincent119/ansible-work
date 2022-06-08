@@ -2,6 +2,6 @@
 - hosts: redis-replication-nodes
   roles:
     #- { role: Redis , become: yes,}
-    - { role: Redis , become: yes, replication: true ,sentinel: true}
+    - { role: Redis-Cluster, become: yes}
     #- { role: mariadb , become: yes, cluster: true}
 

@@ -28,7 +28,7 @@ systemctl stop redis
 
 
 
-## Redis Master-Slave Replication
+## Redis replication
 
 ```mermaid
 graph TD
@@ -71,7 +71,7 @@ systemctl stop redis
 
 
 
-## Redis Master-Slave Replication + sentinel
+## Redis Replica + sentinel
 
 ```mermaid
 flowchart LR
