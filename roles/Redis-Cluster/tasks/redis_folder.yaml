@@ -1,0 +1,39 @@
+---
+- name: "check source {{redis_source_path}}"
+  stat:
+    path: "{{ redis_source_path }}"
+  register: source_status
+
+- debug: 
+    msg: "{{source_status.stat.exists}}"
+  #when:  not source_status.stat.exists
+
+- name: "Create source {{redis_source_path}} directory if it doesn't exist"
+  ansible.builtin.file:
+    path:  "{{redis_source_path}}"
+    state: directory
+    recurse: true
+  become: true
+
+- name: "Create source {{redis_log_path}}/{{redis_master_port}} directory if it doesn't exist"
+  vars: 
+    redis_port: "{{item}}"
+  ansible.builtin.file:
+    path:  "{{redis_log_path}}/{{item}}"
+    state: directory
+    recurse: true
+  become: true
+  with_items: 
+    - "{{redis_ports}}"
+
+
+- name: "Create source {{redis_db_path}}/{{item}} directory if it doesn't exist"
+  vars: 
+    redis_port: "{{item}}"
+  ansible.builtin.file:
+    path:  "{{redis_db_path}}/{{item}}"
+    state: directory
+    recurse: true
+  become: true
+  with_items: 
+    - "{{redis_ports}}"

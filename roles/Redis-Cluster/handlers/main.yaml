@@ -1,15 +1,15 @@
 ---
 - name: restart redis
+  vars:
+    redis_port: "{{item}}"
   service: 
-    name: "{{redis_daemon}}"
+    name: "redis-{{redis_port}}"
     state: "restarted"
     enabled: true
+  with_items: 
+    - "{{redis_ports}}"
+    
 
-- name: restart redis sentinel
-  service: 
-    name: "{{redis_sentinel_daemon}}"
-    state: "restarted"
-    enabled: true  
     
     
     

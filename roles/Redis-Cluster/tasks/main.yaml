@@ -1,28 +1,6 @@
 ---
 # - include_vars: "{{ role_path }}/vars/{{ansible_distribution | lower }}.yaml"
 
-- name: Disable SELinux
-  shell: |
-    setenforce 0
-    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-
-- name: Allow Overcommit Memory
-  ansible.posix.sysctl:
-    name: vm.overcommit_memory
-    value: "1"
-    state: present
-    reload: yes
-    ignoreerrors: yes
-
-- name: Stop and disable firewalld and iptables
-  service:
-    name: "{{item}}"
-    state: stopped
-    enabled: False
-  with_items: 
-    - firewalld
-    - iptables
-
 # - name: apt install dependability on package for Ubuntu
 #   apt:
 #     name:
@@ -35,6 +13,8 @@
 #       - build-essential
 #       - libsystemd-dev
 #       - tcl
+#       - selinux-utils
+#       - netfilter-persistent
 #     state: present
 #   when: ansible_distribution == "Ubuntu"
 
@@ -53,32 +33,41 @@
 
 # - debug: var=yum_result
 
+# - name: Disable SELinux for RedHat 
+#   shell: |
+#     setenforce 0
+#     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
+
+
+# - name: Disable SELinux for Ubuntu 
+#   shell: |
+#     setenforce 0
+#     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/semanage.conf
+#   when: ansible_distribution == "Ubuntu"
+
+
+# - name: Allow Overcommit Memory
+#   ansible.posix.sysctl:
+#     name: vm.overcommit_memory
+#     value: "1"
+#     state: present
+#     reload: yes
+#     ignoreerrors: yes
+
+# - name: Stop and disable firewalld and iptables
+#   service:
+#     name: "{{item}}"
+#     state: stopped
+#     enabled: False
+#   with_items: 
+#     - firewalld
+#     - iptables
+#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
 
 
 # - include_tasks: redis_user.yaml
-
-# - name: "check source {{redis_source_path}}"
-#   stat:
-#     path: "{{ redis_source_path }}"
-#   register: source_status
-
-# - debug: 
-#     msg: "{{source_status.stat.exists}}"
-#   #when:  not source_status.stat.exists
-
-# - name: "Create source {{redis_source_path}} directory if it doesn't exist"
-#   ansible.builtin.file:
-#     path: "{{item}}"
-#     state: directory
-#     recurse: true
-#   become: true
-#   with_items: 
-#     - "{{redis_source_path}}"
-#     - "{{redis_log_path}}"
-#     - "{{redis_db_path}}"
-#   #when: not source_status.stat.exists
-#   register: dir_result
-
+# - include_tasks: redis_folder.yaml
 
 # - include_tasks: redis_install.yaml
 
@@ -86,11 +75,10 @@
 #   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" 
 # - include_tasks: Ubuntu.yaml
 #   when: ansible_distribution == "Ubuntu"
+- include_tasks: redis_config.yaml
+- include_tasks: redis_cluster.yaml
 
 
-
-
-- debug: msg="{{all_list}}" 
 #- debug: msg="{{ all_list}}"
 
 

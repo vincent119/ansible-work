@@ -1,0 +1,74 @@
+---
+- name: install default redis configuration
+  vars:
+    redis_port: "{{ item }}"
+  template:
+    src: "{{ role_path }}/templates/redis.conf.j2"
+    dest: "{{redis_app_path}}/redis/redis-{{ item }}.conf"
+    owner: "{{redis_user}}"
+  with_items: 
+    - "{{redis_ports}}"
+
+
+- name: Change Owner with folder file 
+  ansible.builtin.file:
+    path: "{{item}}"
+    owner: "{{redis_user}}"
+    group: "{{redis_group}}"
+    recurse: true
+  with_items:
+    - "{{redis_log_path}}"
+    - "{{redis_app_path}}/redis-{{redis_version}}"
+    - "{{redis_db_dir}}"
+
+- name: create redis service for systemd
+  vars:
+    redis_port: "{{item}}"
+  template:
+    src: "{{ role_path }}/templates/systemd-redis_server.service.j2"
+    dest: /etc/systemd/system/redis-{{item}}.service
+    owner: root
+    group: root
+    mode: 0644
+  with_items: 
+    - "{{redis_ports}}"
+  when: ansible_service_mgr == 'systemd'
+
+- name: reload systemd
+  shell: systemctl daemon-reload
+  become: true
+
+- name: Ensure Redis is running and enabled on boot.
+  vars:
+    redis_port: "{{item}}"
+  service: 
+    name: "redis-{{item}}"
+    state: started 
+    enabled: yes
+  with_items: 
+    - "{{redis_ports}}"
+
+# - name: redis_sentinel config copy
+#   template:
+#     src: "{{ role_path }}/templates/{{ item }}.j2"
+#     dest: "{{redis_app_path}}/redis/{{ item }}"
+#     owner: "{{redis_user}}"
+#   with_items:
+#     - sentinel.conf
+#   when: replication == true and sentinel == true
+
+# - name: create redis-sentinel service for systemd
+#   template:
+#     src: "{{ role_path }}/templates/redis-sentinel.service.j2"
+#     dest: /etc/systemd/system/redis-sentinel.service
+#     owner: root
+#     group: root
+#     mode: 0644
+#   when: ansible_service_mgr == 'systemd' and  replication == true and sentinel == true
+
+# - name: Ensure redis-sentinel is running and enabled on boot.
+#   service: 
+#     name: "{{ redis_sentinel_daemon }}"
+#     state: started 
+#     enabled: true
+#   when:  replication == true and sentinel == true

@@ -97,7 +97,9 @@ protected-mode yes
 
 # Accept connections on the specified port, default is 6379 (IANA #815344).
 # If port 0 is specified Redis will not listen on a TCP socket.
+
 port {{redis_port}}
+
 # TCP listen() backlog.
 #
 # In high requests-per-second environments you need a high backlog in order
@@ -289,7 +291,8 @@ supervised {{redis_supervised}}
 #
 # Note that on modern Linux systems "/run/redis.pid" is more conforming
 # and should be used instead.
-pidfile {{redis_pid_file}}
+
+pidfile /var/run/redis{{redis_port}}.pid
 
 # Specify the server verbosity level.
 # This can be one of:
@@ -302,7 +305,7 @@ loglevel {{redis_loglevel}}
 # Specify the log file name. Also the empty string can be used to force
 # Redis to log on the standard output. Note that if you use standard
 # output for logging but daemonize, logs will be sent to /dev/null
-logfile {{redis_logfile}}
+logfile {{redis_log_path}}/{{redis_port}}/redis-server.log
 
 # To enable logging to the system logger, just set 'syslog-enabled' to yes,
 # and optionally update the other syslog parameters to suit your needs.
@@ -458,7 +461,7 @@ rdb-del-sync-files no
 # The Append Only File will also be created inside this directory.
 #
 # Note that you must specify a directory here, not a file name.
-dir {{redis_db_dir}}
+dir {{redis_db_dir}}/{{redis_port}}
 
 ################################# REPLICATION #################################
 
@@ -474,15 +477,17 @@ dir {{redis_db_dir}}
 #    stop accepting writes if it appears to be not connected with at least
 #    a given number of replicas.
 # 2) Redis replicas are able to perform a partial resynchronization with the
-#    master if the replication link is lost for a relatively small amount of
+#    master if the replication link is lost for a relatipidvely small amount of
 #    time. You may want to configure the replication backlog size (see the next
 #    sections of this file) with a sensible value depending on your needs.
 # 3) Replication is automatic and does not need user intervention. After a
 #    network partition replicas automatically try to reconnect to masters
 #    and resynchronize with them.
+
 {% if ( replication ) and (redis_replication_first_nodes not in ansible_all_ipv4_addresses) %}
 replicaof {{redis_replication_first_nodes}} {{redis_port}}
 {% endif %}
+
 # If the master is password protected (using the "requirepass" configuration
 # directive below) it is possible to tell the replica to authenticate before
 # starting the replication synchronization process, otherwise the master will
@@ -915,7 +920,7 @@ acllog-max-len 128
 #
 {% if redis_auth %}
 requirepass {{redis_requirepass}}
-{% endif %}}
+{% endif %}
 # New users are initialized with restrictive permissions by default, via the
 # equivalent of this ACL rule 'off resetkeys -@all'. Starting with Redis 6.2, it
 # is possible to manage access to Pub/Sub channels with ACL rules as well. The
@@ -1398,22 +1403,25 @@ lua-time-limit 5000
 # started as cluster nodes can. In order to start a Redis instance as a
 # cluster node enable the cluster support uncommenting the following:
 #
-# cluster-enabled yes
-
+{% if cluster %}
+cluster-enabled {{redis_cluster_enabled}}
+{% endif %}
 # Every cluster node has a cluster configuration file. This file is not
 # intended to be edited by hand. It is created and updated by Redis nodes.
 # Every Redis Cluster node requires a different cluster configuration file.
 # Make sure that instances running in the same system do not have
 # overlapping cluster configuration file names.
 #
-# cluster-config-file nodes-6379.conf
+{% if cluster %}
+cluster-config-file nodes-{{redis_port}}.conf
+{% endif %}
 
 # Cluster node timeout is the amount of milliseconds a node must be unreachable
 # for it to be considered in failure state.
 # Most other internal time limits are a multiple of the node timeout.
-#
-# cluster-node-timeout 15000
-
+{% if cluster %}
+cluster-node-timeout {{redis_cluster_node_timeout}}
+{% endif %}
 # A replica of a failing master will avoid to start a failover if its data
 # looks too old.
 #

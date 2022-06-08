@@ -6,7 +6,7 @@ redis_gz_file: "{{redis_version}}.tar.gz"
 redis_download: "https://github.com/redis/redis/archive/refs/tags/{{redis_gz_file}}"
 replication: false
 sentinel: false
-cluster: false
+cluster: true
 cluster_node_count: "{{groups[redis_replication_nodes_group]| length}}"
 #  redis_supervised systemd , auto ,no ,upstart
 redis_supervised: "systemd"
@@ -15,7 +15,6 @@ redis_app_path: "/opt/APP"
 redis_log_path: "/opt/logs/redis"
 redis_db_path: "/opt/db/redis"
 redis_bin_path: "{{redis_app_path}}/redis/bin"
-redis_conf_path: "{{redis_app_path}}/redis/redis.conf"
 redis_user: "redis"
 redis_group: "redis"
 redis_daemon: "redis"
@@ -23,16 +22,16 @@ redis_sentinel_daemon: "redis_sentinel_daemon"
 redis_auth: true
 redis_requirepass: "Theeb7oose"
 redis_bind: 0.0.0.0
-redis_port: 6379
+redis_ports: 
+  - 6379
+  - 6380
 redis_timeout: 0
 redis_daemonize: "no"
 redis_loglevel: "notice"
 redis_maxmemory: "256M"
 # The working directory
 redis_db_dir: "/opt/db/redis"
-redis_pid_file: "/var/run/redis_6379.pid"
-redis_logfile: "{{redis_log_path}}/redis-server.log"
-redis_maxclients: "100"
+redis_maxclients: "500"
 # The filename where to dump the DB
 redis_dbfilename: "dump.rdb"
 # APPEND ONLY MODE
@@ -52,10 +51,14 @@ redis_masteruser: "masteruser"
 redis_masterauth: "{{redis_requirepass}}" 
 
 ## Redis sentinel 
-redis_sentinel_conf_path: "{{redis_app_path}}/redis/sentinel.conf"
-redis_sentinel_port: 26379
-redis_sentinel_pidfile: "/var/run/redis-sentinel.pid"
-redis_sentinel_logfile: "{{redis_log_path}}/sentinel.log"
-redis_sentinel_master_name: "ckmaster"
-redis_down_after_milliseconds: 10000
-redis_failover_timeout: 18000
+# redis_sentinel_conf_path: "{{redis_app_path}}/redis/sentinel.conf"
+# redis_sentinel_port: 26379
+# redis_sentinel_pidfile: "/var/run/redis-sentinel.pid"
+# redis_sentinel_logfile: "{{redis_log_path}}/sentinel.log"
+# redis_sentinel_master_name: "ckmaster"
+# redis_down_after_milliseconds: 10000
+# redis_failover_timeout: 18000
+
+redis_cluster_enabled: "yes"
+redis_cluster_node_timeout: 5000
+redis_cluster_replica: 1

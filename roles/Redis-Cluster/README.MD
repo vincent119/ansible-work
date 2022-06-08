@@ -9,6 +9,10 @@ os base:
 Redis version:
   - 6.2.7
 
+
+![image](https://github.com/vincent119/ansible-work/blob/main/roles/Redis-Cluster/redis-cluster.png)
+
+![Screenshot](redis-cluster.png)
 ## redis single node
 
 ```bash

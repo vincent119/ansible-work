@@ -24,11 +24,11 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart={{redis_bin_path}}/redis-server {{redis_conf_path}} --supervised systemd --daemonize no
+ExecStart={{redis_bin_path}}/redis-server {{redis_app_path}}/redis/redis-{{redis_port}}.conf --supervised systemd --daemonize no
 ExecStop={{redis_bin_path}}/redis-cli -p {{redis_port}} shutdown
 ## Alternatively, have redis-server load a configuration file:
 #ExecStart=/usr/local/bin/redis-server /path/to/your/redis.conf
-PIDFile={{redis_pid_file}}
+PIDFile=/var/run/redis{{redis_port}}.pid
 LimitNOFILE=10032
 NoNewPrivileges=yes
 #OOMScoreAdjust=-900
