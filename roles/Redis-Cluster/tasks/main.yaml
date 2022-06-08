@@ -1,80 +1,80 @@
 ---
 # - include_vars: "{{ role_path }}/vars/{{ansible_distribution | lower }}.yaml"
 
-# - name: apt install dependability on package for Ubuntu
-#   apt:
-#     name:
-#       - libjemalloc2
-#       - liblua5.1-0 
-#       - liblzf1 
-#       - lua-bitop 
-#       - lua-cjson  
-#       - pkg-config
-#       - build-essential
-#       - libsystemd-dev
-#       - tcl
-#       - selinux-utils
-#       - netfilter-persistent
-#     state: present
-#   when: ansible_distribution == "Ubuntu"
+- name: apt install dependability on package for Ubuntu
+  apt:
+    name:
+      - libjemalloc2
+      - liblua5.1-0 
+      - liblzf1 
+      - lua-bitop 
+      - lua-cjson  
+      - pkg-config
+      - build-essential
+      - libsystemd-dev
+      - tcl
+      - selinux-utils
+      - netfilter-persistent
+    state: present
+  when: ansible_distribution == "Ubuntu"
 
-# - name: "yum install depend package for RedHat or Centos"
-#   yum:
-#     name: "{{item}}"
-#     update_cache: false
-#     state: present
-#   with_items:
-#     - epel-release
-#     - "@Development tools"
-#     - systemd-devel
-#     - tcl-devel
-#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
-#   register: yum_result
+- name: "yum install depend package for RedHat or Centos"
+  yum:
+    name: "{{item}}"
+    update_cache: false
+    state: present
+  with_items:
+    - epel-release
+    - "@Development tools"
+    - systemd-devel
+    - tcl-devel
+  when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
+  register: yum_result
 
-# - debug: var=yum_result
+- debug: var=yum_result
 
-# - name: Disable SELinux for RedHat 
-#   shell: |
-#     setenforce 0
-#     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
-
-
-# - name: Disable SELinux for Ubuntu 
-#   shell: |
-#     setenforce 0
-#     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/semanage.conf
-#   when: ansible_distribution == "Ubuntu"
+- name: Disable SELinux for RedHat 
+  shell: |
+    setenforce 0
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+  when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
 
 
-# - name: Allow Overcommit Memory
-#   ansible.posix.sysctl:
-#     name: vm.overcommit_memory
-#     value: "1"
-#     state: present
-#     reload: yes
-#     ignoreerrors: yes
-
-# - name: Stop and disable firewalld and iptables
-#   service:
-#     name: "{{item}}"
-#     state: stopped
-#     enabled: False
-#   with_items: 
-#     - firewalld
-#     - iptables
-#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
+- name: Disable SELinux for Ubuntu 
+  shell: |
+    setenforce 0
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/semanage.conf
+  when: ansible_distribution == "Ubuntu"
 
 
-# - include_tasks: redis_user.yaml
-# - include_tasks: redis_folder.yaml
+- name: Allow Overcommit Memory
+  ansible.posix.sysctl:
+    name: vm.overcommit_memory
+    value: "1"
+    state: present
+    reload: yes
+    ignoreerrors: yes
 
-# - include_tasks: redis_install.yaml
+- name: Stop and disable firewalld and iptables
+  service:
+    name: "{{item}}"
+    state: stopped
+    enabled: False
+  with_items: 
+    - firewalld
+    - iptables
+  when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
 
-# - include_tasks: CentOS.yaml
-#   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" 
-# - include_tasks: Ubuntu.yaml
-#   when: ansible_distribution == "Ubuntu"
+
+- include_tasks: redis_user.yaml
+- include_tasks: redis_folder.yaml
+
+- include_tasks: redis_install.yaml
+
+- include_tasks: CentOS.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" 
+- include_tasks: Ubuntu.yaml
+  when: ansible_distribution == "Ubuntu"
 - include_tasks: redis_config.yaml
 - include_tasks: redis_cluster.yaml
 

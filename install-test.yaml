@@ -3,5 +3,5 @@
   roles:
     #- { role: Redis , become: yes,}
     - { role: Redis-Cluster, become: yes}
-    #- { role: mariadb , become: yes, cluster: true}
+
 
