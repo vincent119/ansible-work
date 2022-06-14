@@ -25,21 +25,32 @@ d4 ansible_host=172.16.99.204  ansible_user=vincent
 d5 ansible_host=172.16.99.205  ansible_user=vincent
 d6 ansible_host=172.16.99.206  ansible_user=vincent
 
-#[redis-replication-nodes]
-#172.16.99.207 ansible_user=root
-#172.16.99.208 ansible_user=root
-#172.16.99.209 ansible_user=root
-[redis-replication-nodes]
+[consul-server-nodes]
+172.16.99.207 ansible_user=root
+172.16.99.208 ansible_user=root
+172.16.99.209 ansible_user=root
+
+[consul-client-nodes]
 172.16.99.204 ansible_user=vincent
 172.16.99.205 ansible_user=vincent
 172.16.99.206 ansible_user=vincent
+
+[redis-replication-nodes]
+172.16.99.207 ansible_user=root
+172.16.99.208 ansible_user=root
+172.16.99.209 ansible_user=root
+
+#[redis-replication-nodes]
+#172.16.99.204 ansible_user=vincent
+#172.16.99.205 ansible_user=vincent
+#172.16.99.206 ansible_user=vincent
 
 #[galera-cluster-nodes]
 #172.16.99.204 ansible_user=vincent
 #172.16.99.205 ansible_user=vincent
 #172.16.99.206 ansible_user=vincent
 
-[galera-cluster-nodes]
+[galera-cluste-nodes]
 172.16.99.207
 172.16.99.208
 172.16.99.209

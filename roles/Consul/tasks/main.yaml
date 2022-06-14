@@ -1,0 +1,35 @@
+---
+
+- name: Create consul group
+  group:
+    name: "{{consul_group}}"
+    state: present
+    system: true
+
+- name: Create consul user
+  user:
+    name: "{{consul_user}}"
+    group: "{{consul_group}}"
+    shell: /bin/false
+    home: /home/consul/
+    state: present
+
+- name: Create consul dir
+  file:
+    state: directory
+    path: "{{item}}"
+    owner: "{{consul_user}}"
+    group: "{{consul_group}}"
+    mode: 0755
+  with_items: 
+    - "{{consul_logdir}}"
+    - "{{consul_base_dir}}"
+    - "{{consul_data_dir}}"
+
+- include_tasks: consul_get.yaml
+- include_tasks: CentOS.yaml
+  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+- include_tasks: Ubuntu.yaml
+  when: ansible_distribution == "Ubuntu"
+# - include_tasks: consul_config.yaml
+

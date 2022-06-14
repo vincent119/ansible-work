@@ -1,0 +1,53 @@
+---
+
+
+
+consul_version: 1.12.2
+consul_platform: "linux_amd64"
+consul_file: "consul_{{consul_version}}_{{consul_platform}}.zip"
+consul_file_url: "https://releases.hashicorp.com/consul/{{consul_version}}/{{consul_file}}"
+consul_file_hash: "https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{consul_version}}_SHA256SUMS"
+
+consul_group: "consul"
+consul_user: "consul"
+consul_base_dir: "/opt/APP/consul"
+
+
+
+consul_ui: true
+consul_ui_legacy: false
+
+consul_logdir: /opt/logs/consul
+consul_logfile: "{{ consul_logdir }}/consul.log"
+consul_loglevel: "INFO"
+consul_run_path: "/var/run/consul"
+
+consul_config: "{{consul_base_dir}}"
+consul_data_dir: "/opt/db/consul" 
+
+consul_server_group: "consul-server-nodes"
+consul_bootstrap_nodes: "{{groups[consul_server_group][0]}}"
+consul_client_group:  "consul-client-nodes"
+
+
+consul_domain: "consul.com"
+consul_datacenter: "TPE"
+consul_ip: "{{ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0])}}"
+
+consul_http_port: 8500
+consul_dns_port: 8600
+consul_grpc_port: 8502
+
+consul_systemd_restart_sec: 42
+consul_systemd_limit_nofile: 65535
+
+
+consul_env_vars:
+  - "CONSUL_UI_BETA=false"
+
+consul_server: true
+
+
+
+# Consul Connect #
+consul_connect_enabled: true

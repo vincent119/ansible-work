@@ -1,0 +1,21 @@
+---
+- name: Printing the environment consul in Ansible
+  shell: "cat /etc/environment|grep consul | wc -l"
+  register: env_consul
+# - debug: msg="{{env_openresty.stdout}}"
+
+- name: add {{consul_base_dir}} to path
+  lineinfile:
+    dest: "/etc/environment"
+    state: present
+    regexp: '(PATH=["])(.*)(["])$'
+    line: '\1\2:{{consul_base_dir}}\3'
+    backrefs: yes
+  when: env_consul.stdout == "0"
+
+- name: source "/etc/environment"
+  shell: source /etc/environment && echo $PATH
+  become: true
+  args:
+     executable: /bin/bash
+  register: profile_status

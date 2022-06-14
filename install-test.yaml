@@ -1,7 +1,9 @@
 ---
-- hosts: redis-replication-nodes
+- hosts: 
+    #- consul-server-nodes 
+    - consul-client-nodes
   roles:
     #- { role: Redis , become: yes,}
-    - { role: Redis-Cluster, become: yes}
+    - { role: Consul, become: yes}
 
 

@@ -55,15 +55,15 @@
     reload: yes
     ignoreerrors: yes
 
-- name: Stop and disable firewalld and iptables
-  service:
-    name: "{{item}}"
-    state: stopped
-    enabled: False
-  with_items: 
-    - firewalld
-    - iptables
-  when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
+# - name: Stop and disable firewalld and iptables
+#   service:
+#     name: "{{item}}"
+#     state: stopped
+#     enabled: False
+#   with_items: 
+#     - firewalld
+#     - iptables
+#   when: ansible_distribution == "RedHat" or ansible_distribution ==  "CentOS"
 
 
 - include_tasks: redis_user.yaml
