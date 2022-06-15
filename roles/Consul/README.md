@@ -16,17 +16,17 @@
 consul Cluster node -- [consul-server-nodes]
 
 | node name | ip |   
-|--|--|--|
+|--|--|
 |c7-1  |172.16.99.207  |   
-|c7-2 | 172.16.99.208| |
+|c7-2 | 172.16.99.208| 
 | c7-3  | 172.16.99.209     |  
 
 consul Client node -- [consul-client-nodes]
 
 | node name | ip |   
-|--|--|--|
+|--|--|
 |db4  |172.16.99.204  |   
-|db5 | 172.16.99.205| |
+|db5 | 172.16.99.205| 
 | db6 | 172.16.99.206     |  
 
 
