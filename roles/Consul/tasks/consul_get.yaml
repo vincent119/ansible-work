@@ -9,7 +9,7 @@
 - name: Unzip consul binary
   unarchive:
     src: /tmp/{{consul_file}}
-    dest: "{{consul_base_dir}}"
+    dest: "{{consul_bin_path}}"
     remote_src: true
     group: "{{consul_group}}"
     owner: "{{consul_user}}"

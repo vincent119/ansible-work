@@ -21,15 +21,17 @@
     owner: "{{consul_user}}"
     group: "{{consul_group}}"
     mode: 0755
+    force: true
+    recurse: true
   with_items: 
     - "{{consul_logdir}}"
-    - "{{consul_base_dir}}"
     - "{{consul_data_dir}}"
+    - "{{consul_bin_path}}"
 
-- include_tasks: consul_get.yaml
-- include_tasks: CentOS.yaml
-  when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
-- include_tasks: Ubuntu.yaml
-  when: ansible_distribution == "Ubuntu"
-# - include_tasks: consul_config.yaml
+# - include_tasks: consul_get.yaml
+# - include_tasks: CentOS.yaml
+#   when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+# - include_tasks: Ubuntu.yaml
+#   when: ansible_distribution == "Ubuntu"
+- include_tasks: consul_config.yaml
 

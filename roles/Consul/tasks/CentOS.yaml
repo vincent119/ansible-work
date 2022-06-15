@@ -4,12 +4,12 @@
   register: env_consul
 - debug: msg="{{env_consul.stdout}}"
 
-- name: "Add {{ consul_base_dir }} to PATH"
+- name: "Add {{ consul_bin_path }} to PATH"
   lineinfile:
     path: "/etc/profile"
     state: present
     regexp: '(PATH=)(["]?)([\w|\/|\:]+)([\$PATH]+)(["]?)$'
-    line: '\1\3{{ consul_base_dir }}:\4'
+    line: '\1\3{{ consul_bin_path }}:\4'
     backrefs: yes
   when: env_consul.stdout == "0"
 

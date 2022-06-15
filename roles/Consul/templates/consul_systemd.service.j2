@@ -13,7 +13,10 @@ Description=Consul agent
 Requires=network-online.target
 After=network-online.target
 
+
+
 [Service]
+Type=simple
 User={{ consul_user }}
 Group={{ consul_group }}
 PIDFile={{ consul_run_path }}/consul.pid
@@ -23,17 +26,13 @@ Environment=CONSUL_UI_LEGACY=true
 {% endif %}
 ExecStartPre=-/bin/mkdir -m 0750 -p {{ consul_run_path }}
 ExecStartPre=/bin/chown -R {{ consul_user }}:{{ consul_group }} {{ consul_run_path }}
-ExecStart={{ consul_base_dir }}/consul agent \
-    -config-file={{ consul_config }}/consul.json \
-    -config-dir={{ consul_config}} \
-    -pid-file={{ consul_run_path }}/consul.pid
+{% if consul_bootstrap_nodes == ansible_default_ipv4.address %}ExecStart={{ consul_bin_path }}/consul agent -server {% else %} ExecStart={{ consul_bin_path }}/consul agent {% endif %} -config-dir={{ consul_config}}  -pid-file={{ consul_run_path }}/consul.pid -config-file={{ consul_config }}/consul.json
 ExecReload=/bin/kill -HUP $MAINPID
+ExecStop={{ consul_bin_path }}/consul leave
 KillMode=process
 KillSignal=SIGTERM
 Restart=on-failure
 RestartSec={{ consul_systemd_restart_sec }}
-StandardOutput=null
-StandardError=null
 {% for var in consul_env_vars %}
 Environment={{ var }}
 {% endfor %}

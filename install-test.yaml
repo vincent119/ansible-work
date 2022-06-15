@@ -1,6 +1,6 @@
 ---
 - hosts: 
-    #- consul-server-nodes 
+    - consul-server-nodes 
     - consul-client-nodes
   roles:
     #- { role: Redis , become: yes,}

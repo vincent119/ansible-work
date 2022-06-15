@@ -1,12 +1,5 @@
 {
   "node_name": "{{ ansible_hostname }}",
-{% if consul_ui %}
-  "ui": true,
-  "addresses":{
-    "http": "0.0.0.0",
-    "dns": "0.0.0.0"
-  },
-{% endif %}
   "data_dir": "{{ consul_data_dir }}",
   "log_level": "{{ consul_loglevel }}",
   "log_file": "{{consul_logfile}}",
@@ -22,22 +15,12 @@
     "grpc": {{ consul_grpc_port }}
 {% endif %}
   },
-
-  "server": {{consul_server|lower}},
+   "server": false, 
   "encrypt": "{{consul_encrypt}}",
   "retry_interval": "{{consul_retry_interval}}",
   "retry_join": [{% for host in groups[consul_server_group] %} "{{ host }}" {% if not loop.last %},{% endif %}{% endfor %}],
   "rejoin_after_leave": true,
-{% if consul_bootstrap_nodes == ansible_default_ipv4.address %}
-  "bootstrap": true,
-{% endif %}
-{% if consul_bootstrap_nodes != ansible_default_ipv4.address %}
-  "bootstrap_expect": {{ groups[consul_server_group]|length }},
-{% endif %}
-{% if consul_connect_enabled %}
   "connect": {
     "enabled": true
-  },
-{% endif %}
-  "start_join": [{% for host in groups[consul_server_group] %} "{{ host }}" {% if not loop.last %},{% endif %}{% endfor %}]
+  }
 }

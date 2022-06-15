@@ -11,7 +11,7 @@ consul_file_hash: "https://releases.hashicorp.com/consul/{{consul_version}}/cons
 consul_group: "consul"
 consul_user: "consul"
 consul_base_dir: "/opt/APP/consul"
-
+consul_bin_path: "{{consul_base_dir}}/bin"
 
 
 consul_ui: true
@@ -47,7 +47,11 @@ consul_env_vars:
 
 consul_server: true
 
-
+# consul keygen
+consul_encrypt: "kB3vFsMULDDzcU7+xlucDHC7u8a7Jul/IPnDhRsWILs="
 
 # Consul Connect #
 consul_connect_enabled: true
+
+
+consul_retry_interval: "30s"

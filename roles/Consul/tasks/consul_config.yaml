@@ -1,11 +1,27 @@
 ---
-- name: Consul | Template out config
+
+
+- name: Consul | Server Template out config
   template:
     src: "{{ role_path }}/templates/consul.json.j2"
     dest: "{{ consul_config }}/consul.json"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
-  #notify: restart consul
+  when: " ansible_default_ipv4.address in groups[consul_server_group]"
+  notify: restart consul
+   
+
+
+- name: Consul | Client  Template out config
+  template:
+    src: "{{ role_path }}/templates/consul_client.json.j2"
+    dest: "{{ consul_config }}/consul.json"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+  notify: restart consul
+  when: "ansible_default_ipv4.address in groups[consul_client_group]"
+
+
 
 - name: Consul | Copy consul.service file
   template:

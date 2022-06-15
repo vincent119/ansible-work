@@ -4,12 +4,12 @@
   register: env_consul
 # - debug: msg="{{env_openresty.stdout}}"
 
-- name: add {{consul_base_dir}} to path
+- name: add {{consul_bin_path}} to path
   lineinfile:
     dest: "/etc/environment"
     state: present
     regexp: '(PATH=["])(.*)(["])$'
-    line: '\1\2:{{consul_base_dir}}\3'
+    line: '\1\2:{{consul_bin_path}}\3'
     backrefs: yes
   when: env_consul.stdout == "0"
 
