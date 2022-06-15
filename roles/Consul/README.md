@@ -5,5 +5,5 @@
 
 
 
-![Screenshot](image/redis-cluster.png)
+![Screenshot](image/Consul-Architecture.png)
 
