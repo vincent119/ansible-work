@@ -2,3 +2,34 @@
   ansible.posix.selinux:
     state: disabled
   become: true
+
+
+- name: "yum install depend package for RedHat or Centos"
+  yum:
+    name: "{{item}}"
+    update_cache: true
+    state: present
+  with_items:
+    - epel-release
+    - pcre-devel
+    - openssl-devel
+    - gcc
+    - curl
+    - GeoIP-devel
+    - pandoc
+    - zlib.x86_64
+    - perl-Digest-MD5
+    - readline-devel
+    - autoconf
+    - automake
+    - libtool
+    - make
+    - unzip
+    - zip
+    - wget
+    - automake
+    - autoconf
+    - gcc-c++
+    - "@Development tools"
+    - htop
+    - net-tools

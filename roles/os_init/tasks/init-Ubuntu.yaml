@@ -17,3 +17,24 @@
     configfile: /etc/selinux/semanage.conf 
     state: disabled
   become: true
+
+
+- name: apt install dependability on package for Ubuntu
+  apt:
+    name:
+      - libreadline-dev
+      - libncurses5-dev
+      - libpcre3-dev
+      - libssl-dev
+      - perl
+      - curl
+      - geoip-bin
+      - geoip-database
+      - libgeoip-dev
+      - libgeoip1
+      - zlib1g
+      - zlib1g-dev
+      - net-tools
+      - build-essential
+      - htop
+    state: present
